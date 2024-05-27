@@ -93,22 +93,26 @@
           context.lineWidth = SHIP_SIZE / 10;
           context.beginPath();
 
-          // Starting at the rear left of the ship twice the ship's length
+          // Starting at the rear left of the ship
           context.moveTo(
-            ship.x - ship.r * ((8 / 3) * Math.cos(ship.a) + Math.sin(ship.a)),
-            ship.y + ship.r * ((8 / 3) * Math.sin(ship.a) - Math.cos(ship.a))
+            ship.x -
+              ship.r * ((2 / 3) * Math.cos(ship.a) + 0.5 * Math.sin(ship.a)),
+            ship.y +
+              ship.r * ((2 / 3) * Math.sin(ship.a) - 0.5 * Math.cos(ship.a))
           );
 
           // Drawing a line to the rear center of the ship
           context.lineTo(
-            ship.x - ((ship.r * 4) / 3) * Math.cos(ship.a),
-            ship.y + ((ship.r * 4) / 3) * Math.sin(ship.a)
+            ship.x - ((ship.r * 7) / 3) * Math.cos(ship.a),
+            ship.y + ((ship.r * 7) / 3) * Math.sin(ship.a)
           );
 
           // Next, drawing a line to the rear right of the ship
           context.lineTo(
-            ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) - Math.sin(ship.a)),
-            ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) + Math.cos(ship.a))
+            ship.x -
+              ship.r * ((2 / 3) * Math.cos(ship.a) - 0.5 * Math.sin(ship.a)),
+            ship.y +
+              ship.r * ((2 / 3) * Math.sin(ship.a) + 0.5 * Math.cos(ship.a))
           );
 
           context.closePath();
