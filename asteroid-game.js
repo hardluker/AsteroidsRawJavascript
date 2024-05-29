@@ -1,12 +1,15 @@
 const FPS = 30; // Frames per Second
+
 const SHIP_SIZE = 30; // Ship height in pixels
 const SHIP_THRUST = 8; // Acceleration of ship in pixels per second every second
 const FRICTION = 0.7; // Friction coefficient of space (0 = no friction, 1 = ton of friction)
 const TURN_SPEED = 360; //Turn speed in degrees per second
+
 const ASTEROIDS_NUM = 3; //Number of asteroids at the starting level.
 const ASTEROIDS_SIZE = 100; // Starting size of asteroids in pixels
 const ASTEROIDS_SPEED = 50; // Max starting speed in pixels per second.
 const ASTEROIDS_VERT = 10; // Average number of vertices of the asteroids.
+const ASTEROIDS_JAGGEDNESS = 0.4; //Jaggeness of asteroids. ( 0 = none, 1 = ton of)
 
 /** @type {HTMLCanvasElement} */
 let canv = document.getElementById('gameCanvas');
@@ -112,8 +115,16 @@ function newAsteroid(x, y) {
     // Random number of whole vertices
     vertices: Math.floor(
       Math.random() * (ASTEROIDS_VERT + 1) + ASTEROIDS_VERT / 2
-    )
+    ),
+    offset: []
   };
+
+  for (let i = 0; i < asteroid.vertices; i++) {
+    asteroid.offset.push(
+      Math.random() * ASTEROIDS_JAGGEDNESS * 2 + 1 - ASTEROIDS_JAGGEDNESS
+    );
+  }
+
   return asteroid;
 }
 
@@ -208,7 +219,7 @@ function update() {
   //Draw Asteroids
   context.strokeStyle = 'slategrey';
   context.lineWidth = SHIP_SIZE / 20;
-  let x, y, r, a, vert;
+  let x, y, r, a, vert, offs;
   for (let i = 0; i < asteroids.length; i++) {
     // get asteroid properties
     x = asteroids[i].x;
@@ -216,16 +227,20 @@ function update() {
     r = asteroids[i].r;
     a = asteroids[i].a;
     vert = asteroids[i].vertices;
+    offs = asteroids[i].offset;
 
     // Draw a path
     context.beginPath();
-    context.moveTo(x + r * Math.cos(a), y + r * Math.sin(a));
+    context.moveTo(
+      x + r * offs[0] * Math.cos(a),
+      y + r * offs[0] * Math.sin(a)
+    );
 
     // Draw the polygon
     for (let j = 0; j < vert; j++) {
       context.lineTo(
-        x + r * Math.cos(a + (j * Math.PI * 2) / vert),
-        y + r * Math.sin(a + (j * Math.PI * 2) / vert)
+        x + r * offs[j] * Math.cos(a + (j * Math.PI * 2) / vert),
+        y + r * offs[j] * Math.sin(a + (j * Math.PI * 2) / vert)
       );
     }
     context.closePath();
