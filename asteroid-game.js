@@ -29,38 +29,38 @@ document.addEventListener('keyup', keyRelease);
 setInterval(update, 1000 / FPS);
 
 function keyPress(/** @type {KeyboardEvent} */ ev) {
-  switch (ev.keyCode) {
+  switch (ev.key) {
     // Left arrow event (rotate ship left)
-    case 37:
+    case 'ArrowLeft':
       ship.rot = ((TURN_SPEED / 180) * Math.PI) / FPS;
       break;
 
     //Up arrow event (Ship flies forward)
-    case 38:
+    case 'ArrowUp':
       ship.thrusting = true;
       break;
 
     //Right arrow event (rotate ship right)
-    case 39:
+    case 'ArrowRight':
       ship.rot = ((-TURN_SPEED / 180) * Math.PI) / FPS;
       break;
   }
 }
 
 function keyRelease(/** @type {keyboardEvent} */ ev) {
-  switch (ev.keyCode) {
+  switch (ev.key) {
     // Left arrow event (Stop rotate ship left)
-    case 37:
+    case 'ArrowLeft':
       ship.rot = 0;
       break;
 
     //Up arrow event (Stop Ship flies forward)
-    case 38:
+    case 'ArrowUp':
       ship.thrusting = false;
       break;
 
     //Right arrow event (Stop rotate ship right)
-    case 39:
+    case 'ArrowRight':
       ship.rot = 0;
       break;
   }
