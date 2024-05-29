@@ -6,6 +6,7 @@ const TURN_SPEED = 360; //Turn speed in degrees per second
 const ASTEROIDS_NUM = 3; //Number of asteroids at the starting level.
 const ASTEROIDS_SIZE = 100; // Starting size of asteroids in pixels
 const ASTEROIDS_SPEED = 50; // Max starting speed in pixels per second.
+const ASTEROIDS_VERT = 10; // Average number of vertices of the asteroids.
 
 /** @type {HTMLCanvasElement} */
 let canv = document.getElementById('gameCanvas');
@@ -97,8 +98,12 @@ function newAsteroid(x, y) {
     yvelocity:
       ((Math.random() * ASTEROIDS_SPEED) / FPS) *
       (Math.random() < 0.5 ? 1 : -1),
-    r: ASTEROIDS_SIZE,
-    a: Math.random() * Math.PI * 2 // Random angle in radians
+    r: ASTEROIDS_SIZE / 2,
+    a: Math.random() * Math.PI * 2, // Random angle in radians
+    // Random number of whole vertices
+    vertices: Math.floor(
+      Math.random() * (ASTEROIDS_VERT + 1) + ASTEROIDS_VERT / 2
+    )
   };
   return asteroid;
 }
@@ -192,4 +197,31 @@ function update() {
   context.fillRect(ship.x - 1, ship.y - 1, 2, 2);
 
   //Draw Asteroids
+  context.strokeStyle = 'slategrey';
+  context.lineWidth = SHIP_SIZE / 20;
+  let x, y, r, a, vert;
+  for (let i = 0; i < asteroids.length; i++) {
+    // get asteroid properties
+    x = asteroids[i].x;
+    y = asteroids[i].y;
+    r = asteroids[i].r;
+    a = asteroids[i].a;
+    vert = asteroids[i].vertices;
+
+    // Draw a path
+    context.beginPath();
+    context.moveTo(x + r * Math.cos(a), y + r * Math.sin(a));
+
+    // Draw the polygon
+    for (let j = 0; j < vert; j++) {
+      context.lineTo(
+        x + r * Math.cos(a + (j * Math.PI * 2) / vert),
+        y + r * Math.sin(a + (j * Math.PI * 2) / vert)
+      );
+    }
+    context.closePath();
+    context.stroke();
+    // Move the asteroid
+    // Handle edge of screen
+  }
 }
