@@ -4,8 +4,10 @@ const SHIP_SIZE = 30; // Ship height in pixels
 const SHIP_THRUST = 8; // Acceleration of ship in pixels per second every second
 const FRICTION = 0.7; // Friction coefficient of space (0 = no friction, 1 = ton of friction)
 const TURN_SPEED = 360; //Turn speed in degrees per second
+const SHIP_EXPLODE_DURATION = 0.3; // Duration of ship explosion in seconds
+
 const SHOW_CENTER_DOT = false; //Development tool for visualizing ship center and trajectory.
-const SHOW_BOUNDING = true; // Development tool to visualize collision bounding
+const SHOW_BOUNDING = false; // Development tool to visualize collision bounding
 
 const ASTEROIDS_NUM = 3; //Number of asteroids at the starting level.
 const ASTEROIDS_SIZE = 100; // Starting size of asteroids in pixels
@@ -23,6 +25,7 @@ let ship = {
   r: SHIP_SIZE / 2,
   a: (90 / 180) * Math.PI, //Convert Degree to Radians
   rot: 0,
+  explodeTime: 0,
   thrusting: false,
   thrust: {
     x: 0,
@@ -127,13 +130,7 @@ function newAsteroid(x, y) {
 }
 
 function explodeShip() {
-  context.fillStyle = 'lime';
-  context.strokeStyle = 'lime';
-  context.beginPath();
-  context.arc(ship.x, ship.y, ship.r, 0, Math.PI * 2, false);
-  context.closePath();
-  context.stroke();
-  context.fill();
+  ship.explodeTime = Math.ceil(SHIP_EXPLODE_DURATION * FPS);
 }
 
 function distBetweenPoints(x1, y1, x2, y2) {
@@ -141,6 +138,8 @@ function distBetweenPoints(x1, y1, x2, y2) {
 }
 
 function update() {
+  let exploding = ship.explodeTime > 0;
+
   // draw space
   context.fillStyle = 'black';
   context.fillRect(0, 0, canv.width, canv.height);
@@ -177,62 +176,87 @@ function update() {
     }
   }
 
-  // Draw the thruster
-  if (ship.thrusting) {
-    context.fillStyle = 'yellow';
-    context.strokeStyle = 'red';
-    context.lineWidth = SHIP_SIZE / 10;
+  // If the ship is not exploding, draw it.
+  if (!exploding) {
+    // Draw triangle ship
+    context.strokeStyle = 'white';
+    context.lineWidth = SHIP_SIZE / 20;
     context.beginPath();
 
-    // Starting at the rear left of the ship
+    // Starting the stroke at the nose of the ship
     context.moveTo(
-      ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) + 0.5 * Math.sin(ship.a)),
-      ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) - 0.5 * Math.cos(ship.a))
+      ship.x + (4 / 3) * ship.r * Math.cos(ship.a),
+      ship.y - (4 / 3) * ship.r * Math.sin(ship.a)
     );
 
-    // Drawing a line to the rear center of the ship
+    // Drawing a line to the bottom left
     context.lineTo(
-      ship.x - ((ship.r * 6) / 3) * Math.cos(ship.a),
-      ship.y + ((ship.r * 6) / 3) * Math.sin(ship.a)
+      ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) + Math.sin(ship.a)),
+      ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) - Math.cos(ship.a))
     );
 
-    // Next, drawing a line to the rear right of the ship
+    // Next, drawing a line to the bottom right
     context.lineTo(
-      ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) - 0.5 * Math.sin(ship.a)),
-      ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) + 0.5 * Math.cos(ship.a))
+      ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) - Math.sin(ship.a)),
+      ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) + Math.cos(ship.a))
     );
 
+    // Finally, Drawing the line back to the nose of the ship
     context.closePath();
-    context.fill();
     context.stroke();
+
+    // Draw the thruster
+    if (ship.thrusting) {
+      context.fillStyle = 'yellow';
+      context.strokeStyle = 'red';
+      context.lineWidth = SHIP_SIZE / 10;
+      context.beginPath();
+
+      // Starting at the rear left of the ship
+      context.moveTo(
+        ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) + 0.5 * Math.sin(ship.a)),
+        ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) - 0.5 * Math.cos(ship.a))
+      );
+
+      // Drawing a line to the rear center of the ship
+      context.lineTo(
+        ship.x - ((ship.r * 6) / 3) * Math.cos(ship.a),
+        ship.y + ((ship.r * 6) / 3) * Math.sin(ship.a)
+      );
+
+      // Next, drawing a line to the rear right of the ship
+      context.lineTo(
+        ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) - 0.5 * Math.sin(ship.a)),
+        ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) + 0.5 * Math.cos(ship.a))
+      );
+
+      context.closePath();
+      context.fill();
+      context.stroke();
+    }
+  } else {
+    // Draw the explosion
+    context.fillStyle = 'darkred';
+    context.beginPath();
+    context.arc(ship.x, ship.y, ship.r * 1.8, 0, Math.PI * 2, false);
+    context.fill();
+    context.fillStyle = 'red';
+    context.beginPath();
+    context.arc(ship.x, ship.y, ship.r * 1.4, 0, Math.PI * 2, false);
+    context.fill();
+    context.fillStyle = 'orange';
+    context.beginPath();
+    context.arc(ship.x, ship.y, ship.r * 1.1, 0, Math.PI * 2, false);
+    context.fill();
+    context.fillStyle = 'yellow';
+    context.beginPath();
+    context.arc(ship.x, ship.y, ship.r * 0.8, 0, Math.PI * 2, false);
+    context.fill();
+    context.fillStyle = 'white';
+    context.beginPath();
+    context.arc(ship.x, ship.y, ship.r * 0.5, 0, Math.PI * 2, false);
+    context.fill();
   }
-
-  // Draw triangle ship
-  context.strokeStyle = 'white';
-  context.lineWidth = SHIP_SIZE / 20;
-  context.beginPath();
-
-  // Starting the stroke at the nose of the ship
-  context.moveTo(
-    ship.x + (4 / 3) * ship.r * Math.cos(ship.a),
-    ship.y - (4 / 3) * ship.r * Math.sin(ship.a)
-  );
-
-  // Drawing a line to the bottom left
-  context.lineTo(
-    ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) + Math.sin(ship.a)),
-    ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) - Math.cos(ship.a))
-  );
-
-  // Next, drawing a line to the bottom right
-  context.lineTo(
-    ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) - Math.sin(ship.a)),
-    ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) + Math.cos(ship.a))
-  );
-
-  // Finally, Drawing the line back to the nose of the ship
-  context.closePath();
-  context.stroke();
 
   // Ship Center dot
   if (SHOW_CENTER_DOT) {
