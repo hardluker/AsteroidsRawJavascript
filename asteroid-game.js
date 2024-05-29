@@ -79,12 +79,21 @@ function createAsteroidBelt() {
   asteroids = [];
   //Declare X and Y of asteroids.
   let x, y;
-
   for (let i = 0; i < ASTEROIDS_NUM; i++) {
-    x = Math.floor(Math.random() * canv.width);
-    y = Math.floor(Math.random() * canv.height);
+    do {
+      x = Math.floor(Math.random() * canv.width);
+      y = Math.floor(Math.random() * canv.height);
+    } while (
+      distBetweenPoints(ship.x, ship.y, x, y) <
+      ASTEROIDS_SIZE * 2 + ship.r
+    );
     asteroids.push(newAsteroid(x, y));
   }
+  // Calculate points until the asteriod is a certain distance fro the ship.
+}
+
+function distBetweenPoints(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
 
 function newAsteroid(x, y) {
