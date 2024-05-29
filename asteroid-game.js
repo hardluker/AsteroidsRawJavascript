@@ -4,6 +4,8 @@ const SHIP_SIZE = 30; // Ship height in pixels
 const SHIP_THRUST = 8; // Acceleration of ship in pixels per second every second
 const FRICTION = 0.7; // Friction coefficient of space (0 = no friction, 1 = ton of friction)
 const TURN_SPEED = 360; //Turn speed in degrees per second
+const SHOW_CENTER_DOT = false; //Development tool for visualizing ship center and trajectory.
+const SHOW_BOUNDING = true; // Development tool to visualize collision bounding
 
 const ASTEROIDS_NUM = 3; //Number of asteroids at the starting level.
 const ASTEROIDS_SIZE = 100; // Starting size of asteroids in pixels
@@ -83,6 +85,7 @@ function createAsteroidBelt() {
   //Declare X and Y of asteroids.
   let x, y;
   for (let i = 0; i < ASTEROIDS_NUM; i++) {
+    // Calculate points until the asteriod is a certain distance from the ship.
     do {
       x = Math.floor(Math.random() * canv.width);
       y = Math.floor(Math.random() * canv.height);
@@ -92,11 +95,6 @@ function createAsteroidBelt() {
     );
     asteroids.push(newAsteroid(x, y));
   }
-  // Calculate points until the asteriod is a certain distance fro the ship.
-}
-
-function distBetweenPoints(x1, y1, x2, y2) {
-  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
 
 function newAsteroid(x, y) {
@@ -128,17 +126,59 @@ function newAsteroid(x, y) {
   return asteroid;
 }
 
+function explodeShip() {
+  context.fillStyle = 'lime';
+  context.strokeStyle = 'lime';
+  context.beginPath();
+  context.arc(ship.x, ship.y, ship.r, 0, Math.PI * 2, false);
+  context.closePath();
+  context.stroke();
+  context.fill();
+}
+
+function distBetweenPoints(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
+
 function update() {
   // draw space
   context.fillStyle = 'black';
   context.fillRect(0, 0, canv.width, canv.height);
 
-  //Thrust the ship
+  // Thrust the ship
   if (ship.thrusting) {
     ship.thrust.x += (SHIP_THRUST * Math.cos(ship.a)) / FPS;
     ship.thrust.y -= (SHIP_THRUST * Math.sin(ship.a)) / FPS;
+  } else {
+    ship.thrust.x -= (FRICTION * ship.thrust.x) / FPS;
+    ship.thrust.y -= (FRICTION * ship.thrust.y) / FPS;
+  }
 
-    // draw the thruster
+  // Update ship rotation
+  ship.a += ship.rot;
+
+  // Move the ship
+  ship.x += ship.thrust.x;
+  ship.y += ship.thrust.y;
+
+  // Handle edge of screen
+  if (ship.x < 0 - ship.r) ship.x = canv.width + ship.r;
+  else if (ship.x > canv.width + ship.r) ship.x = 0 - ship.r;
+  if (ship.y < 0 - ship.r) ship.y = canv.height + ship.r;
+  else if (ship.y > canv.height + ship.r) ship.y = 0 - ship.r;
+
+  // Check for asteroid collisions
+  for (let i = 0; i < asteroids.length; i++) {
+    if (
+      distBetweenPoints(ship.x, ship.y, asteroids[i].x, asteroids[i].y) <
+      ship.r + asteroids[i].r
+    ) {
+      explodeShip();
+    }
+  }
+
+  // Draw the thruster
+  if (ship.thrusting) {
     context.fillStyle = 'yellow';
     context.strokeStyle = 'red';
     context.lineWidth = SHIP_SIZE / 10;
@@ -165,12 +205,9 @@ function update() {
     context.closePath();
     context.fill();
     context.stroke();
-  } else {
-    ship.thrust.x -= (FRICTION * ship.thrust.x) / FPS;
-    ship.thrust.y -= (FRICTION * ship.thrust.y) / FPS;
   }
 
-  // draw triangle ship
+  // Draw triangle ship
   context.strokeStyle = 'white';
   context.lineWidth = SHIP_SIZE / 20;
   context.beginPath();
@@ -197,30 +234,25 @@ function update() {
   context.closePath();
   context.stroke();
 
-  //rotate ship
-  ship.a += ship.rot;
+  // Ship Center dot
+  if (SHOW_CENTER_DOT) {
+    context.fillStyle = 'red';
+    context.fillRect(ship.x - 1, ship.y - 1, 2, 2);
+  }
 
-  //move the ship
-  ship.x += ship.thrust.x;
-  ship.y += ship.thrust.y;
+  // Draw bounding circle for ship
+  if (SHOW_BOUNDING) {
+    context.strokeStyle = 'lime';
+    context.beginPath();
+    context.arc(ship.x, ship.y, ship.r, 0, Math.PI * 2, false);
+    context.stroke();
+  }
 
-  // handle edge of screen X
-  if (ship.x < 0 - ship.r) ship.x = canv.width + ship.r;
-  else if (ship.x > canv.width + ship.r) ship.x = 0 - ship.r;
-
-  // handle edge of screen Y
-  if (ship.y < 0 - ship.r) ship.y = canv.height + ship.r;
-  else if (ship.y > canv.height + ship.r) ship.y = 0 - ship.r;
-
-  // Center dot
-  context.fillStyle = 'red';
-  context.fillRect(ship.x - 1, ship.y - 1, 2, 2);
-
-  //Draw Asteroids
-  context.strokeStyle = 'slategrey';
-  context.lineWidth = SHIP_SIZE / 20;
+  // Draw asteroids
   let x, y, r, a, vert, offs;
   for (let i = 0; i < asteroids.length; i++) {
+    context.strokeStyle = 'slategrey';
+    context.lineWidth = SHIP_SIZE / 20;
     // get asteroid properties
     x = asteroids[i].x;
     y = asteroids[i].y;
@@ -245,7 +277,31 @@ function update() {
     }
     context.closePath();
     context.stroke();
-    // Move the asteroid
+
+    // Draw bounding circle
+    if (SHOW_BOUNDING) {
+      context.strokeStyle = 'lime';
+      context.beginPath();
+      context.arc(x, y, r, 0, Math.PI * 2, false);
+      context.stroke();
+    }
+  }
+
+  //Moving the Asteroids
+  for (let i = 0; i < asteroids.length; i++) {
+    asteroids[i].x += asteroids[i].xvelocity;
+    asteroids[i].y += asteroids[i].yvelocity;
+
     // Handle edge of screen
+    if (asteroids[i].x < 0 - asteroids[i].r) {
+      asteroids[i].x = canv.width + asteroids[i].r;
+    } else if (asteroids[i].x > canv.width + asteroids[i].r) {
+      asteroids[i].x = 0 - asteroids[i].r;
+    }
+    if (asteroids[i].y < 0 - asteroids[i].r) {
+      asteroids[i].y = canv.height + asteroids[i].r;
+    } else if (asteroids[i].y > canv.height + asteroids[i].r) {
+      asteroids[i].y = 0 - asteroids[i].r;
+    }
   }
 }
