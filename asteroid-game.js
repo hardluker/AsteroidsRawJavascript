@@ -3,6 +3,9 @@ const SHIP_SIZE = 30; // Ship height in pixels
 const SHIP_THRUST = 8; // Acceleration of ship in pixels per second every second
 const FRICTION = 0.7; // Friction coefficient of space (0 = no friction, 1 = ton of friction)
 const TURN_SPEED = 360; //Turn speed in degrees per second
+const ASTEROIDS_NUM = 3; //Number of asteroids at the starting level.
+const ASTEROIDS_SIZE = 100; // Starting size of asteroids in pixels
+const ASTEROIDS_SPEED = 50; // Max starting speed in pixels per second.
 
 /** @type {HTMLCanvasElement} */
 let canv = document.getElementById('gameCanvas');
@@ -20,6 +23,9 @@ let ship = {
     y: 0
   }
 };
+
+let asteroids = [];
+createAsteroidBelt();
 
 // set up event handlers
 document.addEventListener('keydown', keyPress);
@@ -64,6 +70,37 @@ function keyRelease(/** @type {keyboardEvent} */ ev) {
       ship.rot = 0;
       break;
   }
+}
+
+// Function to create the Asteroid belt
+function createAsteroidBelt() {
+  //Clear the asteroids array
+  asteroids = [];
+  //Declare X and Y of asteroids.
+  let x, y;
+
+  for (let i = 0; i < ASTEROIDS_NUM; i++) {
+    x = Math.floor(Math.random() * canv.width);
+    y = Math.floor(Math.random() * canv.height);
+    asteroids.push(newAsteroid(x, y));
+  }
+}
+
+function newAsteroid(x, y) {
+  let asteroid = {
+    x: x,
+    y: y,
+    //Random velocity in the positive or negative direction
+    xvelocity:
+      ((Math.random() * ASTEROIDS_SPEED) / FPS) *
+      (Math.random() < 0.5 ? 1 : -1),
+    yvelocity:
+      ((Math.random() * ASTEROIDS_SPEED) / FPS) *
+      (Math.random() < 0.5 ? 1 : -1),
+    r: ASTEROIDS_SIZE,
+    a: Math.random() * Math.PI * 2 // Random angle in radians
+  };
+  return asteroid;
 }
 
 function update() {
@@ -153,4 +190,6 @@ function update() {
   // Center dot
   context.fillStyle = 'red';
   context.fillRect(ship.x - 1, ship.y - 1, 2, 2);
+
+  //Draw Asteroids
 }
