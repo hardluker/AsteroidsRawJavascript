@@ -14,6 +14,7 @@ class Ship {
 
     //State / Utility Attributes
     this.turnSpeed = 360; // Turn speed in degrees per second.
+    this.exploding = false;
     this.explodeTime = 0;
     this.friction = 0.7; // Level of friction (0 = none, 1 = Heavy)
     this.thrustConst = 8; // Acceleration of the ship in pixels per second
@@ -78,5 +79,105 @@ class Ship {
     else if (this.x > this.canv.width + this.r) this.x = 0 - this.r;
     if (this.y < 0 - this.r) this.y = this.canv.height + this.r;
     else if (this.y > this.canv.height + this.r) this.y = 0 - this.r;
+  }
+
+  draw(SHOW_CENTER_DOT, SHOW_BOUNDING) {
+    if (!this.exploding) {
+      // Beginning Draw triangle ship
+      this.context.strokeStyle = 'white';
+      this.context.lineWidth = 30 / 20; // SHIP_SIZE / 20
+      this.context.beginPath();
+
+      // Starting the stroke at the nose of the ship
+      this.context.moveTo(
+        this.x + (4 / 3) * this.r * Math.cos(this.a),
+        this.y - (4 / 3) * this.r * Math.sin(this.a)
+      );
+
+      // Drawing a line to the bottom left
+      this.context.lineTo(
+        this.x - this.r * ((2 / 3) * Math.cos(this.a) + Math.sin(this.a)),
+        this.y + this.r * ((2 / 3) * Math.sin(this.a) - Math.cos(this.a))
+      );
+
+      // Next, drawing a line to the bottom right
+      this.context.lineTo(
+        this.x - this.r * ((2 / 3) * Math.cos(this.a) - Math.sin(this.a)),
+        this.y + this.r * ((2 / 3) * Math.sin(this.a) + Math.cos(this.a))
+      );
+
+      // Finally, Drawing the line back to the nose of the ship
+      this.context.closePath();
+      this.context.stroke();
+
+      // Drawing the thruster flame
+      if (this.thrusting) {
+        this.context.fillStyle = 'yellow';
+        this.context.strokeStyle = 'red';
+        this.context.lineWidth = 30 / 10; // SHIP_SIZE / 10
+        this.context.beginPath();
+
+        // Starting at the rear left of the ship
+        this.context.moveTo(
+          this.x -
+            this.r * ((2 / 3) * Math.cos(this.a) + 0.5 * Math.sin(this.a)),
+          this.y +
+            this.r * ((2 / 3) * Math.sin(this.a) - 0.5 * Math.cos(this.a))
+        );
+
+        // Drawing a line to the rear center behind the ship.
+        this.context.lineTo(
+          this.x - ((this.r * 6) / 3) * Math.cos(this.a),
+          this.y + ((this.r * 6) / 3) * Math.sin(this.a)
+        );
+
+        // Next, drawing a line to the rear right of the ship
+        this.context.lineTo(
+          this.x -
+            this.r * ((2 / 3) * Math.cos(this.a) - 0.5 * Math.sin(this.a)),
+          this.y +
+            this.r * ((2 / 3) * Math.sin(this.a) + 0.5 * Math.cos(this.a))
+        );
+
+        //Finalizing the drawing
+        this.context.closePath();
+        this.context.fill();
+        this.context.stroke();
+      }
+    }
+    // Else, the ship is exploding
+    else {
+      //Draw the explosion
+      colors = ['darkred', 'red', 'orange', 'yellow', 'white'];
+      radii = [1.8, 1.4, 1.1, 0.8, 0.5];
+      for (let i = 0; i < colors.length; i++) {
+        this.context.fillStyle = colors[i];
+        this.context.beginPath();
+        this.context.arc(
+          this.x,
+          this.y,
+          this.r * radii[i],
+          0,
+          Math.PI * 2,
+          false
+        );
+        this.context.fill();
+      }
+    }
+
+    //Developer Tools Drawings
+    //Draw Ship Center dot
+    if (SHOW_CENTER_DOT) {
+      this.context.fillStyle = 'red';
+      this.context.fillRect(this.x - 1, this.y - 1, 2, 2);
+    }
+
+    // Draw bounding circle for ship collision detection
+    if (SHOW_BOUNDING) {
+      this.context.strokeStyle = 'lime';
+      this.context.beginPath();
+      this.context.arc(this.x, this.y, this.r, 0, Math.PI * 2, false);
+      this.context.stroke();
+    }
   }
 }
