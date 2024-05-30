@@ -10,7 +10,8 @@ class Ship {
     SHIP_EXPLODE_DURATION,
     LASERS_MAX,
     LASERS_SPEED,
-    LASERS_DIST
+    LASERS_DIST,
+    LASER_EXPLODE_DURATION
   ) {
     //Canvas / document related attributes
     this.canv = canv;
@@ -40,6 +41,7 @@ class Ship {
     this.lasersMax = LASERS_MAX;
     this.lasersSpeed = LASERS_SPEED;
     this.lasersDist = LASERS_DIST;
+    this.laserExplodeDuration = LASER_EXPLODE_DURATION;
     this.canShoot = true;
     this.lasers = [];
 

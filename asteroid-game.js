@@ -13,6 +13,7 @@ const SHIP_EXPLODE_DURATION = 0.3; // Duration of ship explosion in seconds.
 const LASERS_MAX = 10; //Maximum number of lasers on the screen at once.
 const LASERS_SPEED = 500; // Speed of the lasers in pixels per second.
 const LASERS_DIST = 0.5; // Maximum distance the laser can travel as a percentage of the width of the screen.
+const LASER_EXPLODE_DURATION = 0.1; // For how long in seconds the laser explosion will last.
 
 // Development Tools
 const SHOW_CENTER_DOT = false; //Development tool for visualizing ship center and trajectory.
@@ -48,7 +49,8 @@ let ship = new Ship(
   SHIP_EXPLODE_DURATION,
   LASERS_MAX,
   LASERS_SPEED,
-  LASERS_DIST
+  LASERS_DIST,
+  LASER_EXPLODE_DURATION
 );
 
 // Create an instance of AsteroidBelt after the ship object is fully initialized
