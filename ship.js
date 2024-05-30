@@ -1,14 +1,14 @@
 class Ship {
-  constructor() {
+  constructor(canv, context) {
     //Canvas / document related attributes
-    this.canv = document.getElementById('gameCanvas');
-    this.context = canv.getContext('2d');
+    this.canv = canv;
+    this.context = context;
 
     //Positional Attributes
     this.x = canv.width / 2; // Ship always starts in the middle of the screen
     this.y = canv.height / 2;
     this.size = 30; // Ship height in pixels
-    this.r = SIZE / 2;
+    this.r = this.size / 2;
     this.a = (90 / 180) * Math.PI; // Convert degree to radians
     this.rot = 0;
 
@@ -60,11 +60,11 @@ class Ship {
   update(FPS) {
     //Thrust the ship
     if (this.thrusting) {
-      this.thrust.x += (SHIP_THRUST * Math.cos(this.a)) / FPS;
-      this.thrust.y -= (SHIP_THRUST * Math.sin(this.a)) / FPS;
+      this.thrust.x += (this.thrustConst * Math.cos(this.a)) / FPS;
+      this.thrust.y -= (this.thrustConst * Math.sin(this.a)) / FPS;
     } else {
-      this.thrust.x -= (FRICTION * this.thrust.x) / FPS;
-      this.thrust.y -= (FRICTION * this.thrust.y) / FPS;
+      this.thrust.x -= (this.friction * this.thrust.x) / FPS;
+      this.thrust.y -= (this.friction * this.thrust.y) / FPS;
     }
 
     // Update ship rotation
@@ -148,8 +148,8 @@ class Ship {
     // Else, the ship is exploding
     else {
       //Draw the explosion
-      colors = ['darkred', 'red', 'orange', 'yellow', 'white'];
-      radii = [1.8, 1.4, 1.1, 0.8, 0.5];
+      const colors = ['darkred', 'red', 'orange', 'yellow', 'white'];
+      const radii = [1.8, 1.4, 1.1, 0.8, 0.5];
       for (let i = 0; i < colors.length; i++) {
         this.context.fillStyle = colors[i];
         this.context.beginPath();
@@ -181,3 +181,4 @@ class Ship {
     }
   }
 }
+export default Ship;

@@ -1,3 +1,5 @@
+import Ship from './ship.js';
+
 const FPS = 30; // Frames per Second
 
 const SHIP_SIZE = 30; // Ship height in pixels
@@ -19,67 +21,14 @@ const ASTEROIDS_JAGGEDNESS = 0.4; //Jaggeness of asteroids. ( 0 = none, 1 = ton 
 let canv = document.getElementById('gameCanvas');
 let context = canv.getContext('2d');
 
-let ship = {
-  x: canv.width / 2,
-  y: canv.height / 2,
-  r: SHIP_SIZE / 2,
-  a: (90 / 180) * Math.PI, //Convert Degree to Radians
-  rot: 0,
-  explodeTime: 0,
-  thrusting: false,
-  thrust: {
-    x: 0,
-    y: 0
-  }
-};
+//Creating a ship
+let ship = new Ship(canv, context);
 
 let asteroids = [];
 createAsteroidBelt();
 
-// set up event handlers
-document.addEventListener('keydown', keyPress);
-document.addEventListener('keyup', keyRelease);
-
 //Set up the Game loop
 setInterval(update, 1000 / FPS);
-
-function keyPress(/** @type {KeyboardEvent} */ ev) {
-  switch (ev.key) {
-    // Left arrow event (rotate ship left)
-    case 'ArrowLeft':
-      ship.rot = ((TURN_SPEED / 180) * Math.PI) / FPS;
-      break;
-
-    //Up arrow event (Ship flies forward)
-    case 'ArrowUp':
-      ship.thrusting = true;
-      break;
-
-    //Right arrow event (rotate ship right)
-    case 'ArrowRight':
-      ship.rot = ((-TURN_SPEED / 180) * Math.PI) / FPS;
-      break;
-  }
-}
-
-function keyRelease(/** @type {keyboardEvent} */ ev) {
-  switch (ev.key) {
-    // Left arrow event (Stop rotate ship left)
-    case 'ArrowLeft':
-      ship.rot = 0;
-      break;
-
-    //Up arrow event (Stop Ship flies forward)
-    case 'ArrowUp':
-      ship.thrusting = false;
-      break;
-
-    //Right arrow event (Stop rotate ship right)
-    case 'ArrowRight':
-      ship.rot = 0;
-      break;
-  }
-}
 
 // Function to create the Asteroid belt
 function createAsteroidBelt() {
@@ -138,33 +87,14 @@ function distBetweenPoints(x1, y1, x2, y2) {
 }
 
 function update() {
-  let exploding = ship.explodeTime > 0;
+  ship.exploding = ship.explodeTime > 0;
 
-  // draw space
+  // Draw Outer Space Background
   context.fillStyle = 'black';
   context.fillRect(0, 0, canv.width, canv.height);
 
-  // Thrust the ship
-  if (ship.thrusting) {
-    ship.thrust.x += (SHIP_THRUST * Math.cos(ship.a)) / FPS;
-    ship.thrust.y -= (SHIP_THRUST * Math.sin(ship.a)) / FPS;
-  } else {
-    ship.thrust.x -= (FRICTION * ship.thrust.x) / FPS;
-    ship.thrust.y -= (FRICTION * ship.thrust.y) / FPS;
-  }
-
-  // Update ship rotation
-  ship.a += ship.rot;
-
-  // Move the ship
-  ship.x += ship.thrust.x;
-  ship.y += ship.thrust.y;
-
-  // Handle edge of screen
-  if (ship.x < 0 - ship.r) ship.x = canv.width + ship.r;
-  else if (ship.x > canv.width + ship.r) ship.x = 0 - ship.r;
-  if (ship.y < 0 - ship.r) ship.y = canv.height + ship.r;
-  else if (ship.y > canv.height + ship.r) ship.y = 0 - ship.r;
+  // Updating ship positional and logical data.
+  ship.update(FPS);
 
   // Check for asteroid collisions
   for (let i = 0; i < asteroids.length; i++) {
@@ -176,101 +106,8 @@ function update() {
     }
   }
 
-  // If the ship is not exploding, draw it.
-  if (!exploding) {
-    // Draw triangle ship
-    context.strokeStyle = 'white';
-    context.lineWidth = SHIP_SIZE / 20;
-    context.beginPath();
-
-    // Starting the stroke at the nose of the ship
-    context.moveTo(
-      ship.x + (4 / 3) * ship.r * Math.cos(ship.a),
-      ship.y - (4 / 3) * ship.r * Math.sin(ship.a)
-    );
-
-    // Drawing a line to the bottom left
-    context.lineTo(
-      ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) + Math.sin(ship.a)),
-      ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) - Math.cos(ship.a))
-    );
-
-    // Next, drawing a line to the bottom right
-    context.lineTo(
-      ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) - Math.sin(ship.a)),
-      ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) + Math.cos(ship.a))
-    );
-
-    // Finally, Drawing the line back to the nose of the ship
-    context.closePath();
-    context.stroke();
-
-    // Draw the thruster
-    if (ship.thrusting) {
-      context.fillStyle = 'yellow';
-      context.strokeStyle = 'red';
-      context.lineWidth = SHIP_SIZE / 10;
-      context.beginPath();
-
-      // Starting at the rear left of the ship
-      context.moveTo(
-        ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) + 0.5 * Math.sin(ship.a)),
-        ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) - 0.5 * Math.cos(ship.a))
-      );
-
-      // Drawing a line to the rear center of the ship
-      context.lineTo(
-        ship.x - ((ship.r * 6) / 3) * Math.cos(ship.a),
-        ship.y + ((ship.r * 6) / 3) * Math.sin(ship.a)
-      );
-
-      // Next, drawing a line to the rear right of the ship
-      context.lineTo(
-        ship.x - ship.r * ((2 / 3) * Math.cos(ship.a) - 0.5 * Math.sin(ship.a)),
-        ship.y + ship.r * ((2 / 3) * Math.sin(ship.a) + 0.5 * Math.cos(ship.a))
-      );
-
-      context.closePath();
-      context.fill();
-      context.stroke();
-    }
-  } else {
-    // Draw the explosion
-    context.fillStyle = 'darkred';
-    context.beginPath();
-    context.arc(ship.x, ship.y, ship.r * 1.8, 0, Math.PI * 2, false);
-    context.fill();
-    context.fillStyle = 'red';
-    context.beginPath();
-    context.arc(ship.x, ship.y, ship.r * 1.4, 0, Math.PI * 2, false);
-    context.fill();
-    context.fillStyle = 'orange';
-    context.beginPath();
-    context.arc(ship.x, ship.y, ship.r * 1.1, 0, Math.PI * 2, false);
-    context.fill();
-    context.fillStyle = 'yellow';
-    context.beginPath();
-    context.arc(ship.x, ship.y, ship.r * 0.8, 0, Math.PI * 2, false);
-    context.fill();
-    context.fillStyle = 'white';
-    context.beginPath();
-    context.arc(ship.x, ship.y, ship.r * 0.5, 0, Math.PI * 2, false);
-    context.fill();
-  }
-
-  // Ship Center dot
-  if (SHOW_CENTER_DOT) {
-    context.fillStyle = 'red';
-    context.fillRect(ship.x - 1, ship.y - 1, 2, 2);
-  }
-
-  // Draw bounding circle for ship
-  if (SHOW_BOUNDING) {
-    context.strokeStyle = 'lime';
-    context.beginPath();
-    context.arc(ship.x, ship.y, ship.r, 0, Math.PI * 2, false);
-    context.stroke();
-  }
+  //Drawing the ship
+  ship.draw();
 
   // Draw asteroids
   let x, y, r, a, vert, offs;
