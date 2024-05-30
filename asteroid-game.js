@@ -7,12 +7,12 @@ const FPS = 30; // Frames per Second
 // Ship Related Settings
 const SHIP_SIZE = 30; // Ship height in pixels
 const SHIP_THRUST = 8; // Acceleration of ship in pixels per second every second
-const FRICTION = 0.4; // Friction coefficient of space (0 = no friction, 1 = ton of friction)
+const FRICTION = 0.7; // Friction coefficient of space (0 = no friction, 1 = ton of friction)
 const TURN_SPEED = 360; // Turn speed in degrees per second
 const SHIP_EXPLODE_DURATION = 0.3; // Duration of ship explosion in seconds
 const LASERS_MAX = 10; //Maximum number of lasers on the screen at once
 const LASERS_SPEED = 500; // Speed of the lasers in pixels per second
-const LASERS_DIST = 0.6; // Maximum distance the laser can travel as a percentage of the width of the screen.
+const LASERS_DIST = 0.5; // Maximum distance the laser can travel as a percentage of the width of the screen.
 
 // Development Tools
 const SHOW_CENTER_DOT = false; //Development tool for visualizing ship center and trajectory.
@@ -74,8 +74,10 @@ function gameLoop() {
   // Update Asteroid belt positional and logical data.
   asteroidBelt.update();
 
-  // Check for asteroid collisions
-  detectCollisions();
+  // Perform collision detection if the ship has not been exploded
+  if (!ship.exploding) {
+    detectCollisions();
+  }
 
   //Drawing the ship
   ship.draw(SHOW_CENTER_DOT, SHOW_BOUNDING);
@@ -84,18 +86,33 @@ function gameLoop() {
   asteroidBelt.draw(SHOW_BOUNDING);
 }
 
-// Function for detecting collisions with the ship and the asteroids
+// Function for detecting collisions with asteroids
 function detectCollisions() {
-  for (let i = 0; i < asteroidBelt.asteroids.length; i++) {
-    if (
-      distBetweenPoints(
-        ship.x,
-        ship.y,
-        asteroidBelt.asteroids[i].x,
-        asteroidBelt.asteroids[i].y
-      ) <
-      ship.r + asteroidBelt.asteroids[i].r
-    ) {
+  let ax, ay, ar, lx, ly;
+  for (let i = asteroidBelt.asteroids.length - 1; i >= 0; i--) {
+    // Grabbing the asteroid properties
+    ax = asteroidBelt.asteroids[i].x;
+    ay = asteroidBelt.asteroids[i].y;
+    ar = asteroidBelt.asteroids[i].r;
+    // Looping over lasers checking for asteroid collisions
+    for (let j = ship.lasers.length - 1; j >= 0; j--) {
+      //Grabbing the laser properties
+      lx = ship.lasers[j].x;
+      ly = ship.lasers[j].y;
+
+      // If the laser collides, remove the laser
+      if (distBetweenPoints(ax, ay, lx, ly) < ar) {
+        // remove the laser
+        ship.lasers.splice(j, 1);
+
+        // remove the asteroid
+        asteroidBelt.asteroids.splice(i, 1);
+        break;
+      }
+    }
+
+    // If the asteroids collide with a ship the ship explodes
+    if (distBetweenPoints(ship.x, ship.y, ax, ay) < ship.r + ar) {
       ship.explode();
     }
   }
