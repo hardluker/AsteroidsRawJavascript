@@ -9,7 +9,8 @@ class Ship {
     FPS,
     SHIP_EXPLODE_DURATION,
     LASERS_MAX,
-    LASERS_SPEED
+    LASERS_SPEED,
+    LASERS_DIST
   ) {
     //Canvas / document related attributes
     this.canv = canv;
@@ -38,6 +39,7 @@ class Ship {
     };
     this.lasersMax = LASERS_MAX;
     this.lasersSpeed = LASERS_SPEED;
+    this.lasersDist = LASERS_DIST;
     this.canShoot = true;
     this.lasers = [];
 
@@ -87,7 +89,8 @@ class Ship {
         x: this.x + (4 / 3) * this.r * Math.cos(this.a),
         y: this.y - (4 / 3) * this.r * Math.sin(this.a),
         xvelocity: (this.lasersSpeed * Math.cos(this.a)) / this.fps,
-        yvelocity: (this.lasersSpeed * Math.sin(this.a)) / this.fps
+        yvelocity: (this.lasersSpeed * Math.sin(this.a)) / this.fps,
+        dist: 0 // Distance the laser has traveled.
       });
     }
     // Prevent further shooting
@@ -126,10 +129,22 @@ class Ship {
       if (this.y < 0 - this.r) this.y = this.canv.height + this.r;
       else if (this.y > this.canv.height + this.r) this.y = 0 - this.r;
 
-      //Move the lasers
-      for (let i = 0; i < this.lasers.length; i++) {
+      // Lasers Update Logic
+      for (let i = this.lasers.length - 1; i >= 0; i--) {
+        if (this.lasers[i].dist > this.lasersDist * this.canv.width) {
+          this.lasers.splice(i, 1);
+          continue;
+        }
+
+        // Moving the lasers
         this.lasers[i].x += this.lasers[i].xvelocity;
         this.lasers[i].y -= this.lasers[i].yvelocity;
+
+        // Calculate distanced traveled across the canvas.
+        this.lasers[i].dist += Math.sqrt(
+          Math.pow(this.lasers[i].xvelocity, 2) +
+            Math.pow(this.lasers[i].yvelocity, 2)
+        );
       }
     }
   }
