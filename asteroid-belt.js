@@ -7,10 +7,12 @@ class AsteroidBelt {
     fps,
     numAsteroids,
     asteroidSize,
+    asteroidSizeMin,
     asteroidSpeed,
     asteroidVert,
     asteroidJaggedness,
     asteroidLineWidth,
+    numOfSplits,
     ship
   ) {
     this.canv = canv;
@@ -18,10 +20,12 @@ class AsteroidBelt {
     this.fps = fps;
     this.numAsteroids = numAsteroids;
     this.asteroidSize = asteroidSize;
+    this.asteroidSizeMin = asteroidSizeMin;
     this.asteroidSpeed = asteroidSpeed;
     this.asteroidVert = asteroidVert;
     this.asteroidJaggedness = asteroidJaggedness;
     this.asteroidLineWidth = asteroidLineWidth;
+    this.numOfSplits = numOfSplits;
     this.asteroids = [];
     this.createAsteroids(ship);
   }
@@ -37,13 +41,15 @@ class AsteroidBelt {
         distBetweenPoints(ship.x, ship.y, x, y) <
         this.asteroidSize * 2 + ship.r
       );
-      this.asteroids.push(this.newAsteroid(x, y));
+      this.asteroids.push(
+        this.newAsteroid(x, y, Math.ceil(this.asteroidSize / 2))
+      );
     }
   }
 
   // This function creates an asteroid object.
   // The direction, speed, and jaggedness are random bound by the global variables.
-  newAsteroid(x, y) {
+  newAsteroid(x, y, r) {
     let asteroid = {
       x: x,
       y: y,
@@ -53,7 +59,7 @@ class AsteroidBelt {
       yvelocity:
         ((Math.random() * this.asteroidSpeed) / this.fps) *
         (Math.random() < 0.5 ? 1 : -1),
-      r: this.asteroidSize / 2,
+      r: r,
       a: Math.random() * Math.PI * 2,
       vertices: Math.floor(
         Math.random() * (this.asteroidVert + 1) + this.asteroidVert / 2
@@ -71,6 +77,20 @@ class AsteroidBelt {
     }
 
     return asteroid;
+  }
+
+  destroyAsteroid(index) {
+    //Grabbing asteroid properties
+    let x = this.asteroids[index].x;
+    let y = this.asteroids[index].y;
+    let r = this.asteroids[index].r;
+
+    // Adding smaller asteriods if the asteroid is big enoug
+    if (r > this.asteroidSizeMin / 2) {
+      for (let i = 0; i < this.numOfSplits; i++)
+        this.asteroids.push(this.newAsteroid(x, y, r / 2));
+    }
+    this.asteroids.splice(index, 1);
   }
 
   // This is the function for continually updating asteroid logic

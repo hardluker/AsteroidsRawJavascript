@@ -5,26 +5,28 @@ import AsteroidBelt from './asteroid-belt.js'; // Import the AsteroidBelt class
 const FPS = 30; // Frames per Second
 
 // Ship Related Settings
-const SHIP_SIZE = 30; // Ship height in pixels
-const SHIP_THRUST = 8; // Acceleration of ship in pixels per second every second
-const FRICTION = 0.7; // Friction coefficient of space (0 = no friction, 1 = ton of friction)
-const TURN_SPEED = 360; // Turn speed in degrees per second
-const SHIP_EXPLODE_DURATION = 0.3; // Duration of ship explosion in seconds
-const LASERS_MAX = 10; //Maximum number of lasers on the screen at once
-const LASERS_SPEED = 500; // Speed of the lasers in pixels per second
+const SHIP_SIZE = 30; // Ship height in pixels.
+const SHIP_THRUST = 8; // Acceleration of ship in pixels per second every second.
+const FRICTION = 0.7; // Friction coefficient of space (0 = no friction, 1 = ton of friction).
+const TURN_SPEED = 360; // Turn speed in degrees per second.
+const SHIP_EXPLODE_DURATION = 0.3; // Duration of ship explosion in seconds.
+const LASERS_MAX = 10; //Maximum number of lasers on the screen at once.
+const LASERS_SPEED = 500; // Speed of the lasers in pixels per second.
 const LASERS_DIST = 0.5; // Maximum distance the laser can travel as a percentage of the width of the screen.
 
 // Development Tools
 const SHOW_CENTER_DOT = false; //Development tool for visualizing ship center and trajectory.
-const SHOW_BOUNDING = false; // Development tool to visualize collision bounding
+const SHOW_BOUNDING = false; // Development tool to visualize collision bounding.
 
 // Asteroid Related Settings
 const ASTEROIDS_NUM = 3; //Number of asteroids at the starting level.
-const ASTEROIDS_SIZE = 100; // Starting size of asteroids in pixels
-const ASTEROIDS_SPEED = 50; // Max starting speed in pixels per second.
+const ASTEROIDS_SIZE = 100; // Starting size of asteroids in pixels.
+const ASTEROIDS_SIZE_MIN = 25; // The minimum size an asteroid can be.
+const ASTEROIDS_SPEED = 100; // Max starting speed in pixels per second.
 const ASTEROIDS_VERT = 10; // Average number of vertices of the asteroids.
-const ASTEROIDS_JAGGEDNESS = 0.4; //Jaggeness of asteroids. ( 0 = none, 1 = ton of)
+const ASTEROIDS_JAGGEDNESS = 0.4; //Jaggeness of asteroids. ( 0 = none, 1 = ton of).
 const ASTEROID_LINE_WIDTH = 1.5; // Width of the lines drawn for the asteroids.
+const NUM_OF_SPLITS = 2; // The number of asteroids an asteroid splits into when destroyed
 
 //Defining the canvas and context for drawing the game.
 /** @type {HTMLCanvasElement} */
@@ -56,10 +58,12 @@ let asteroidBelt = new AsteroidBelt(
   FPS,
   ASTEROIDS_NUM,
   ASTEROIDS_SIZE,
+  ASTEROIDS_SIZE_MIN,
   ASTEROIDS_SPEED,
   ASTEROIDS_VERT,
   ASTEROIDS_JAGGEDNESS,
   ASTEROID_LINE_WIDTH,
+  NUM_OF_SPLITS,
   ship
 );
 
@@ -106,7 +110,8 @@ function detectCollisions() {
         ship.lasers.splice(j, 1);
 
         // remove the asteroid
-        asteroidBelt.asteroids.splice(i, 1);
+        asteroidBelt.destroyAsteroid(i);
+        //asteroidBelt.asteroids.splice(i, 1);
         break;
       }
     }
