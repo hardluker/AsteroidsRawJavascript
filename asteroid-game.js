@@ -13,7 +13,7 @@ const SHIP_EXPLODE_DURATION = 0.3; // Duration of ship explosion in seconds
 
 // Development Tools
 const SHOW_CENTER_DOT = false; //Development tool for visualizing ship center and trajectory.
-const SHOW_BOUNDING = false; // Development tool to visualize collision bounding
+const SHOW_BOUNDING = true; // Development tool to visualize collision bounding
 
 // Asteroid Related Settings
 const ASTEROIDS_NUM = 3; //Number of asteroids at the starting level.

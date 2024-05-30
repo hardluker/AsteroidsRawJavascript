@@ -1,4 +1,4 @@
-import { distBetweenPoints } from './asteroid-game.js';
+import { distBetweenPoints } from './asteroid-game.js'; // Importing this utility function for calculating asteroid distance from ship.
 
 class AsteroidBelt {
   constructor(
@@ -21,10 +21,10 @@ class AsteroidBelt {
     this.asteroidVert = asteroidVert;
     this.asteroidJaggedness = asteroidJaggedness;
     this.asteroids = [];
-    this.createAsteroidBelt(ship);
+    this.createAsteroids(ship);
   }
 
-  createAsteroidBelt(ship) {
+  createAsteroids(ship) {
     for (let i = 0; i < this.numAsteroids; i++) {
       let x, y;
       do {

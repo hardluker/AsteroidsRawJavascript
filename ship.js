@@ -132,7 +132,7 @@ class Ship {
       if (this.thrusting) {
         this.context.fillStyle = 'yellow';
         this.context.strokeStyle = 'red';
-        this.context.lineWidth = 30 / 10; // SHIP_SIZE / 10
+        this.context.lineWidth = this.size / 10; // SHIP_SIZE / 10
         this.context.beginPath();
 
         // Starting at the rear left of the ship
@@ -193,6 +193,7 @@ class Ship {
     // Draw bounding circle for ship collision detection
     if (SHOW_BOUNDING) {
       this.context.strokeStyle = 'lime';
+      this.context.lineWidth = this.size / 20; // SHIP_SIZE / 10
       this.context.beginPath();
       this.context.arc(this.x, this.y, this.r, 0, Math.PI * 2, false);
       this.context.stroke();
