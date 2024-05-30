@@ -76,27 +76,29 @@ class Ship {
     //Checking if the ship explosion time has gone off.
     this.exploding = this.explodeTime > 0;
 
-    //Thrust the ship
-    if (this.thrusting) {
-      this.thrust.x += (this.thrustConst * Math.cos(this.a)) / this.fps;
-      this.thrust.y -= (this.thrustConst * Math.sin(this.a)) / this.fps;
-    } else {
-      this.thrust.x -= (this.friction * this.thrust.x) / this.fps;
-      this.thrust.y -= (this.friction * this.thrust.y) / this.fps;
+    if (!this.exploding) {
+      //Thrust the ship
+      if (this.thrusting) {
+        this.thrust.x += (this.thrustConst * Math.cos(this.a)) / this.fps;
+        this.thrust.y -= (this.thrustConst * Math.sin(this.a)) / this.fps;
+      } else {
+        this.thrust.x -= (this.friction * this.thrust.x) / this.fps;
+        this.thrust.y -= (this.friction * this.thrust.y) / this.fps;
+      }
+
+      // Update ship rotation
+      this.a += this.rot;
+
+      // Move the ship
+      this.x += this.thrust.x;
+      this.y += this.thrust.y;
+
+      // Handle edge of screen
+      if (this.x < 0 - this.r) this.x = this.canv.width + this.r;
+      else if (this.x > this.canv.width + this.r) this.x = 0 - this.r;
+      if (this.y < 0 - this.r) this.y = this.canv.height + this.r;
+      else if (this.y > this.canv.height + this.r) this.y = 0 - this.r;
     }
-
-    // Update ship rotation
-    this.a += this.rot;
-
-    // Move the ship
-    this.x += this.thrust.x;
-    this.y += this.thrust.y;
-
-    // Handle edge of screen
-    if (this.x < 0 - this.r) this.x = this.canv.width + this.r;
-    else if (this.x > this.canv.width + this.r) this.x = 0 - this.r;
-    if (this.y < 0 - this.r) this.y = this.canv.height + this.r;
-    else if (this.y > this.canv.height + this.r) this.y = 0 - this.r;
   }
 
   draw(SHOW_CENTER_DOT, SHOW_BOUNDING) {
