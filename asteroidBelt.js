@@ -1,25 +1,30 @@
+import { distBetweenPoints } from './asteroid-game.js';
+
 class AsteroidBelt {
   constructor(
     canv,
     context,
+    fps,
     numAsteroids,
     asteroidSize,
     asteroidSpeed,
     asteroidVert,
-    asteroidJaggedness
+    asteroidJaggedness,
+    ship
   ) {
     this.canv = canv;
     this.context = context;
+    this.fps = fps;
     this.numAsteroids = numAsteroids;
     this.asteroidSize = asteroidSize;
     this.asteroidSpeed = asteroidSpeed;
     this.asteroidVert = asteroidVert;
     this.asteroidJaggedness = asteroidJaggedness;
     this.asteroids = [];
-    this.createAsteroidBelt();
+    this.createAsteroidBelt(ship);
   }
 
-  createAsteroidBelt() {
+  createAsteroidBelt(ship) {
     for (let i = 0; i < this.numAsteroids; i++) {
       let x, y;
       do {
@@ -38,10 +43,10 @@ class AsteroidBelt {
       x: x,
       y: y,
       xvelocity:
-        ((Math.random() * this.asteroidSpeed) / FPS) *
+        ((Math.random() * this.asteroidSpeed) / this.fps) *
         (Math.random() < 0.5 ? 1 : -1),
       yvelocity:
-        ((Math.random() * this.asteroidSpeed) / FPS) *
+        ((Math.random() * this.asteroidSpeed) / this.fps) *
         (Math.random() < 0.5 ? 1 : -1),
       r: this.asteroidSize / 2,
       a: Math.random() * Math.PI * 2,
@@ -85,7 +90,7 @@ class AsteroidBelt {
     let x, y, r, a, vert, offs;
     for (let i = 0; i < this.asteroids.length; i++) {
       this.context.strokeStyle = 'slategrey';
-      this.context.lineWidth = SHIP_SIZE / 20;
+      this.context.lineWidth = 1.5;
 
       x = this.asteroids[i].x;
       y = this.asteroids[i].y;
