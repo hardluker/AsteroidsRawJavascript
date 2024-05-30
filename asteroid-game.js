@@ -21,6 +21,7 @@ const ASTEROIDS_SIZE = 100; // Starting size of asteroids in pixels
 const ASTEROIDS_SPEED = 50; // Max starting speed in pixels per second.
 const ASTEROIDS_VERT = 10; // Average number of vertices of the asteroids.
 const ASTEROIDS_JAGGEDNESS = 0.4; //Jaggeness of asteroids. ( 0 = none, 1 = ton of)
+const ASTEROID_LINE_WIDTH = 1.5; // Width of the lines drawn for the asteroids.
 
 //Defining the canvas and context for drawing the game.
 /** @type {HTMLCanvasElement} */
@@ -52,6 +53,7 @@ let asteroidBelt = new AsteroidBelt(
   ASTEROIDS_SPEED,
   ASTEROIDS_VERT,
   ASTEROIDS_JAGGEDNESS,
+  ASTEROID_LINE_WIDTH,
   ship
 );
 

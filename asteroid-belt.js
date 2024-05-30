@@ -10,6 +10,7 @@ class AsteroidBelt {
     asteroidSpeed,
     asteroidVert,
     asteroidJaggedness,
+    asteroidLineWidth,
     ship
   ) {
     this.canv = canv;
@@ -20,10 +21,12 @@ class AsteroidBelt {
     this.asteroidSpeed = asteroidSpeed;
     this.asteroidVert = asteroidVert;
     this.asteroidJaggedness = asteroidJaggedness;
+    this.asteroidLineWidth = asteroidLineWidth;
     this.asteroids = [];
     this.createAsteroids(ship);
   }
 
+  // This function creates the asteroids and ensures they are not spawned closer than (ship radius + asteroid radius * 2)
   createAsteroids(ship) {
     for (let i = 0; i < this.numAsteroids; i++) {
       let x, y;
@@ -38,6 +41,8 @@ class AsteroidBelt {
     }
   }
 
+  // This function creates an asteroid object.
+  // The direction, speed, and jaggedness are random bound by the global variables.
   newAsteroid(x, y) {
     let asteroid = {
       x: x,
@@ -56,6 +61,7 @@ class AsteroidBelt {
       offset: []
     };
 
+    // This for loop is apply offseted jaggedness to reference when the polygon is drawn
     for (let i = 0; i < asteroid.vertices; i++) {
       asteroid.offset.push(
         Math.random() * this.asteroidJaggedness * 2 +
@@ -67,12 +73,15 @@ class AsteroidBelt {
     return asteroid;
   }
 
+  // This is the function for continually updating asteroid logic
   update() {
     for (let i = 0; i < this.asteroids.length; i++) {
+      // Continually applying velocity to the asteroids
       this.asteroids[i].x += this.asteroids[i].xvelocity;
       this.asteroids[i].y += this.asteroids[i].yvelocity;
 
-      // Handle edge of screen
+      // Handle edge of screen positioning.
+      // They will pop up on the opposite side of the screen
       if (this.asteroids[i].x < 0 - this.asteroids[i].r) {
         this.asteroids[i].x = this.canv.width + this.asteroids[i].r;
       } else if (this.asteroids[i].x > this.canv.width + this.asteroids[i].r) {
@@ -87,10 +96,13 @@ class AsteroidBelt {
   }
 
   draw(SHOW_BOUNDING) {
+    // Shortcut variables
     let x, y, r, a, vert, offs;
+
+    // Looping through the asteroids and drawing them
     for (let i = 0; i < this.asteroids.length; i++) {
       this.context.strokeStyle = 'slategrey';
-      this.context.lineWidth = 1.5;
+      this.context.lineWidth = this.asteroidLineWidth;
 
       x = this.asteroids[i].x;
       y = this.asteroids[i].y;
@@ -114,7 +126,7 @@ class AsteroidBelt {
       this.context.closePath();
       this.context.stroke();
 
-      // Draw bounding circle
+      // Draw bounding circle if enabled
       if (SHOW_BOUNDING) {
         this.context.strokeStyle = 'lime';
         this.context.beginPath();
