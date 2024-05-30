@@ -10,6 +10,8 @@ const SHIP_THRUST = 8; // Acceleration of ship in pixels per second every second
 const FRICTION = 0.4; // Friction coefficient of space (0 = no friction, 1 = ton of friction)
 const TURN_SPEED = 360; // Turn speed in degrees per second
 const SHIP_EXPLODE_DURATION = 0.3; // Duration of ship explosion in seconds
+const LASERS_MAX = 10; //Maximum number of lasers on the screen at once
+const LASERS_SPEED = 500; // Speed of the lasers in pixels per second
 
 // Development Tools
 const SHOW_CENTER_DOT = false; //Development tool for visualizing ship center and trajectory.
@@ -40,7 +42,9 @@ let ship = new Ship(
   FRICTION,
   TURN_SPEED,
   FPS,
-  SHIP_EXPLODE_DURATION
+  SHIP_EXPLODE_DURATION,
+  LASERS_MAX,
+  LASERS_SPEED
 );
 
 // Create an instance of AsteroidBelt after the ship object is fully initialized

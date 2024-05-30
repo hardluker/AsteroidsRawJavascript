@@ -7,7 +7,9 @@ class Ship {
     FRICTION,
     TURN_SPEED,
     FPS,
-    SHIP_EXPLODE_DURATION
+    SHIP_EXPLODE_DURATION,
+    LASERS_MAX,
+    LASERS_SPEED
   ) {
     //Canvas / document related attributes
     this.canv = canv;
@@ -34,6 +36,10 @@ class Ship {
       x: 0,
       y: 0
     };
+    this.lasersMax = LASERS_MAX;
+    this.lasersSpeed = LASERS_SPEED;
+    this.canShoot = true;
+    this.lasers = [];
 
     //Event Listeners for keyboard commands
     document.addEventListener('keydown', this.keyPress.bind(this));
@@ -43,14 +49,18 @@ class Ship {
   // Handling when keys are pressed
   keyPress(ev) {
     switch (ev.key) {
-      case 'ArrowLeft':
+      case 'ArrowLeft': // Rotate ship left
         this.rot = ((this.turnSpeed / 180) * Math.PI) / this.fps; // TURN_SPEED / FPS
         break;
-      case 'ArrowUp':
+      case 'ArrowUp': // Move ship forward
         this.thrusting = true;
         break;
-      case 'ArrowRight':
+      case 'ArrowRight': // Rotate ship right
         this.rot = ((-this.turnSpeed / 180) * Math.PI) / this.fps; // TURN_SPEED / FPS
+        break;
+      case ' ': //When the spacebar is pressed shoot
+        this.canShoot = true;
+        this.shootLaser();
         break;
     }
   }
@@ -68,6 +78,23 @@ class Ship {
     }
   }
 
+  // Ship shooting logic
+  shootLaser() {
+    //Create the laser object
+    if (this.canShoot && this.lasers.length < this.lasersMax) {
+      this.lasers.push({
+        // Creating the laser from the nose of the ship
+        x: this.x + (4 / 3) * this.r * Math.cos(this.a),
+        y: this.y - (4 / 3) * this.r * Math.sin(this.a),
+        xvelocity: (this.lasersSpeed * Math.cos(this.a)) / this.fps,
+        yvelocity: (this.lasersSpeed * Math.sin(this.a)) / this.fps
+      });
+    }
+    // Prevent further shooting
+    this.canShoot = false;
+  }
+
+  // Ship exploding logic
   explode() {
     this.explodeTime = this.explodeDuration;
   }
@@ -93,11 +120,17 @@ class Ship {
       this.x += this.thrust.x;
       this.y += this.thrust.y;
 
-      // Handle edge of screen
+      // Handle edge of screen for ship
       if (this.x < 0 - this.r) this.x = this.canv.width + this.r;
       else if (this.x > this.canv.width + this.r) this.x = 0 - this.r;
       if (this.y < 0 - this.r) this.y = this.canv.height + this.r;
       else if (this.y > this.canv.height + this.r) this.y = 0 - this.r;
+
+      //Move the lasers
+      for (let i = 0; i < this.lasers.length; i++) {
+        this.lasers[i].x += this.lasers[i].xvelocity;
+        this.lasers[i].y -= this.lasers[i].yvelocity;
+      }
     }
   }
 
@@ -163,6 +196,21 @@ class Ship {
         this.context.closePath();
         this.context.fill();
         this.context.stroke();
+      }
+
+      //Drawing the laser
+      for (let i = 0; i < this.lasers.length; i++) {
+        this.context.fillStyle = 'salmon';
+        this.context.beginPath();
+        this.context.arc(
+          this.lasers[i].x,
+          this.lasers[i].y,
+          this.size / 15,
+          0,
+          Math.PI * 2,
+          false
+        );
+        this.context.fill();
       }
     }
     // Else, the ship is exploding
