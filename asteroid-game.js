@@ -2,7 +2,7 @@ import Ship from './ship.js';
 import AsteroidBelt from './asteroid-belt.js'; // Import the AsteroidBelt class
 
 // Game Settings
-const FPS = 30; // Frames per Second
+const FPS = 60; // Frames per Second
 
 // Ship Related Settings
 const SHIP_SIZE = 30; // Ship height in pixels.
