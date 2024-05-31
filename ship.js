@@ -155,7 +155,7 @@ class Ship {
     if (!this.exploding) {
       // Beginning Draw triangle ship
       this.context.strokeStyle = 'white';
-      this.context.lineWidth = this.size / 20; // SHIP_SIZE / 20
+      this.context.lineWidth = this.size / 30; // SHIP_SIZE / 20
       this.context.beginPath();
 
       // Starting the stroke at the nose of the ship
@@ -217,7 +217,7 @@ class Ship {
 
       //Drawing the laser
       for (let i = 0; i < this.lasers.length; i++) {
-        this.context.fillStyle = 'salmon';
+        this.context.fillStyle = 'white ';
         this.context.beginPath();
         this.context.arc(
           this.lasers[i].x,

@@ -10,7 +10,7 @@ const SHIP_THRUST = 8; // Acceleration of ship in pixels per second every second
 const FRICTION = 0.7; // Friction coefficient of space (0 = no friction, 1 = ton of friction).
 const TURN_SPEED = 360; // Turn speed in degrees per second.
 const SHIP_EXPLODE_DURATION = 0.3; // Duration of ship explosion in seconds.
-const LASERS_MAX = 10; //Maximum number of lasers on the screen at once.
+const LASERS_MAX = 3; //Maximum number of lasers on the screen at once.
 const LASERS_SPEED = 500; // Speed of the lasers in pixels per second.
 const LASERS_DIST = 0.5; // Maximum distance the laser can travel as a percentage of the width of the screen.
 const LASER_EXPLODE_DURATION = 0.1; // For how long in seconds the laser explosion will last.
