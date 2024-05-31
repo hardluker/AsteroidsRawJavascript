@@ -27,7 +27,7 @@ class AsteroidBelt {
     this.asteroidLineWidth = asteroidLineWidth;
     this.numOfSplits = numOfSplits;
     this.asteroids = [];
-    this.createAsteroids(ship);
+    this.createAsteroids(ship); // Passing the ship through to ensure new asteroids are not near the ship.
   }
 
   // This function creates the asteroids and ensures they are not spawned closer than (ship radius + asteroid radius * 2)

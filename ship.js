@@ -44,6 +44,7 @@ class Ship {
     this.laserExplodeDuration = LASER_EXPLODE_DURATION;
     this.canShoot = true;
     this.lasers = [];
+    this.numOfFragments = 6; //Number of exploded laser fragments
 
     //Event Listeners for keyboard commands
     document.addEventListener('keydown', this.keyPress.bind(this));
@@ -92,11 +93,32 @@ class Ship {
         y: this.y - (4 / 3) * this.r * Math.sin(this.a),
         xvelocity: (this.lasersSpeed * Math.cos(this.a)) / this.fps,
         yvelocity: (this.lasersSpeed * Math.sin(this.a)) / this.fps,
-        dist: 0 // Distance the laser has traveled.
+        dist: 0, // Distance the laser has traveled.
+        explodeTime: 0,
+        canExplode: true,
+        fragments: [] // Array of the laser fragments for exploding
       });
     }
     // Prevent further shooting
     this.canShoot = false;
+  }
+
+  //Explode the laser
+  explodeLaser(laser) {
+    for (let i = 0; i < this.numOfFragments; i++) {
+      laser.fragments.push({
+        // Creating laser fragments with random velocities
+        x: laser.x,
+        y: laser.y,
+        xvelocity:
+          ((Math.random() * this.lasersSpeed) / this.fps) *
+          (Math.random() < 0.5 ? 1 : -1),
+        yvelocity:
+          ((Math.random() * this.lasersSpeed) / this.fps) *
+          (Math.random() < 0.5 ? 1 : -1)
+      });
+    }
+    laser.canExplode = false;
   }
 
   // Ship exploding logic
@@ -133,12 +155,13 @@ class Ship {
 
       // Lasers Update Logic
       for (let i = this.lasers.length - 1; i >= 0; i--) {
+        // If the laser has traveled too far, remove it.
         if (this.lasers[i].dist > this.lasersDist * this.canv.width) {
           this.lasers.splice(i, 1);
           continue;
         }
 
-        // Moving the lasers
+        // Moving the laser
         this.lasers[i].x += this.lasers[i].xvelocity;
         this.lasers[i].y -= this.lasers[i].yvelocity;
 
@@ -147,6 +170,23 @@ class Ship {
           Math.pow(this.lasers[i].xvelocity, 2) +
             Math.pow(this.lasers[i].yvelocity, 2)
         );
+
+        if (this.lasers[i].explodeTime > 0) {
+          this.lasers[i].xvelocity = 0;
+          this.lasers[i].yvelocity = 0;
+        }
+
+        // If fragments are present, update the positioning
+        for (let j = 0; j < this.lasers[i].fragments.length; j++) {
+          let fragment = this.lasers[i].fragments[j];
+          fragment.x += fragment.xvelocity;
+          fragment.y += fragment.yvelocity;
+          this.lasers[i].explodeTime--;
+        }
+        if (this.lasers[i].explodeTime < 0) {
+          this.lasers.splice(i, 1);
+          continue;
+        }
       }
     }
   }
@@ -215,19 +255,39 @@ class Ship {
         this.context.stroke();
       }
 
-      //Drawing the laser
+      //Drawing the lasers
       for (let i = 0; i < this.lasers.length; i++) {
-        this.context.fillStyle = 'white ';
-        this.context.beginPath();
-        this.context.arc(
-          this.lasers[i].x,
-          this.lasers[i].y,
-          this.size / 15,
-          0,
-          Math.PI * 2,
-          false
-        );
-        this.context.fill();
+        if (this.lasers[i].explodeTime === 0) {
+          this.context.fillStyle = 'white ';
+          this.context.beginPath();
+          this.context.arc(
+            this.lasers[i].x,
+            this.lasers[i].y,
+            this.size / 15,
+            0,
+            Math.PI * 2,
+            false
+          );
+          this.context.fill();
+        } else {
+          // If the laser can explode, explode and create the fragments
+          if (this.lasers[i].canExplode) this.explodeLaser(this.lasers[i]);
+          // Draw the laser explosion fragments
+          for (let j = 0; j < this.lasers[i].fragments.length; j++) {
+            let fragment = this.lasers[i].fragments[j];
+            this.context.fillStyle = 'white ';
+            this.context.beginPath();
+            this.context.arc(
+              fragment.x,
+              fragment.y,
+              this.size / 30,
+              0,
+              Math.PI * 2,
+              false
+            );
+            this.context.fill();
+          }
+        }
       }
     }
     // Else, the ship is exploding
@@ -250,7 +310,7 @@ class Ship {
       }
     }
 
-    //Developer Tools Drawings
+    //Developer Tools
     //Draw Ship Center dot
     if (SHOW_CENTER_DOT) {
       this.context.fillStyle = 'red';
