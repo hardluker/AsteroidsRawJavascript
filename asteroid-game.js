@@ -13,7 +13,7 @@ const SHIP_EXPLODE_DURATION = 0.3; // Duration of ship explosion in seconds.
 const LASERS_MAX = 3; //Maximum number of lasers on the screen at once.
 const LASERS_SPEED = 500; // Speed of the lasers in pixels per second.
 const LASERS_DIST = 0.5; // Maximum distance the laser can travel as a percentage of the width of the screen.
-const LASER_EXPLODE_DURATION = 1; // For how long in seconds the laser explosion will last.
+const LASER_EXPLODE_DURATION = 2; // For how long in seconds the laser explosion will last.
 
 // Development Tools
 const SHOW_CENTER_DOT = false; //Development tool for visualizing ship center and trajectory.

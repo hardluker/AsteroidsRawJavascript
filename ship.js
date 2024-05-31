@@ -44,7 +44,7 @@ class Ship {
     this.laserExplodeDuration = LASER_EXPLODE_DURATION;
     this.canShoot = true;
     this.lasers = [];
-    this.numOfFragments = 6; //Number of exploded laser fragments
+    this.numOfFragments = 10; //Number of exploded laser fragments
 
     //Event Listeners for keyboard commands
     document.addEventListener('keydown', this.keyPress.bind(this));
@@ -111,10 +111,10 @@ class Ship {
         x: laser.x,
         y: laser.y,
         xvelocity:
-          ((Math.random() * this.lasersSpeed) / this.fps) *
+          ((Math.random() * this.lasersSpeed) / 2 / this.fps) *
           (Math.random() < 0.5 ? 1 : -1),
         yvelocity:
-          ((Math.random() * this.lasersSpeed) / this.fps) *
+          ((Math.random() * this.lasersSpeed) / 2 / this.fps) *
           (Math.random() < 0.5 ? 1 : -1)
       });
     }
@@ -257,7 +257,7 @@ class Ship {
 
       //Drawing the lasers
       for (let i = 0; i < this.lasers.length; i++) {
-        if (this.lasers[i].explodeTime === 0) {
+        if (this.lasers[i].explodeTime === 0 && this.lasers[i].canExplode) {
           this.context.fillStyle = 'white ';
           this.context.beginPath();
           this.context.arc(
