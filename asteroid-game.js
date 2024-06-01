@@ -41,6 +41,9 @@ let textAlpha = 1.0;
 let score = 0;
 let gameOver = false;
 
+// Audio Variables
+let fxLaser = new Audio('sounds/laser.m4a');
+
 //Defining the canvas and context for drawing the game.
 /** @type {HTMLCanvasElement} */
 let canv = document.getElementById('gameCanvas');
