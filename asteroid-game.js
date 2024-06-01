@@ -6,12 +6,13 @@ const FPS = 60; // Frames per Second
 
 // Ship Related Settings
 const SHIP_SIZE = 30; // Ship height in pixels.
-const SHIP_THRUST = 8; // Acceleration of ship in pixels per second every second.
+const SHIP_COLOR = 'white';
+const SHIP_THRUST = 4; // Acceleration of ship in pixels per second every second.
 const FRICTION = 0.7; // Friction coefficient of space (0 = no friction, 1 = ton of friction).
 const TURN_SPEED = 360; // Turn speed in degrees per second.
 const SHIP_EXPLODE_DURATION = 0.3; // Duration of ship explosion in seconds.
 const LASERS_MAX = 3; //Maximum number of lasers on the screen at once.
-const LASERS_SPEED = 500; // Speed of the lasers in pixels per second.
+const LASERS_SPEED = 400; // Speed of the lasers in pixels per second.
 const LASERS_DIST = 0.5; // Maximum distance the laser can travel as a percentage of the width of the screen.
 const LASER_EXPLODE_DURATION = 2; // For how long in seconds the laser explosion will last.
 
@@ -25,7 +26,7 @@ const ASTEROIDS_SIZE = 100; // Starting size of asteroids in pixels.
 const ASTEROIDS_SIZE_MIN = 25; // The minimum size an asteroid can be.
 const ASTEROIDS_SPEED = 100; // Max starting speed in pixels per second.
 const ASTEROIDS_VERT = 10; // Average number of vertices of the asteroids.
-const ASTEROIDS_JAGGEDNESS = 0.4; //Jaggeness of asteroids. ( 0 = none, 1 = ton of).
+const ASTEROIDS_JAGGEDNESS = 0.35; //Jaggeness of asteroids. ( 0 = none, 1 = ton of).
 const ASTEROID_LINE_WIDTH = 1.5; // Width of the lines drawn for the asteroids.
 const NUM_OF_SPLITS = 2; // The number of asteroids an asteroid splits into when destroyed
 
@@ -42,6 +43,7 @@ let ship = new Ship(
   canv,
   context,
   SHIP_SIZE,
+  SHIP_COLOR,
   SHIP_THRUST,
   FRICTION,
   TURN_SPEED,

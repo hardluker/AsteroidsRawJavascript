@@ -3,6 +3,7 @@ class Ship {
     canv,
     context,
     SHIP_SIZE,
+    SHIP_COLOR,
     SHIP_THRUST,
     FRICTION,
     TURN_SPEED,
@@ -38,6 +39,11 @@ class Ship {
       x: 0,
       y: 0
     };
+    this.color = SHIP_COLOR;
+    this.numOfPeices = 3;
+    this.pieces = []; // An array of the broken peices of an exploded ship.
+
+    // Ship laser settings
     this.lasersMax = LASERS_MAX;
     this.lasersSpeed = LASERS_SPEED;
     this.lasersDist = LASERS_DIST;
@@ -123,15 +129,36 @@ class Ship {
 
   // Ship exploding logic
   explode() {
+    // Adding peices to the array of ship pieces
+    for (let i = 0; i < this.numOfPeices; i++) {
+      this.pieces.push({
+        // Pushing pieces of the ship
+        x: this.x,
+        y: this.y,
+        r: this.r,
+        a: Math.random() * Math.PI * 2,
+        rot:
+          (((this.turnSpeed / 360) * Math.PI) / this.fps) *
+          (Math.random() < 0.5 ? 1 : -1),
+        xvelocity:
+          ((Math.random() * this.lasersSpeed) / 2 / this.fps) *
+          (Math.random() < 0.5 ? 1 : -1),
+        yvelocity:
+          ((Math.random() * this.lasersSpeed) / 2 / this.fps) *
+          (Math.random() < 0.5 ? 1 : -1)
+      });
+    }
+    // Adding an explode time to the ship
     this.explodeTime = this.explodeDuration;
   }
 
+  //Updating logic and positional data related to the ship.
   update() {
     //Checking if the ship explosion time has gone off.
     this.exploding = this.explodeTime > 0;
 
     if (!this.exploding) {
-      //Thrust the ship
+      //Thrust the ship utilizing an acceleration algorithm
       if (this.thrusting) {
         this.thrust.x += (this.thrustConst * Math.cos(this.a)) / this.fps;
         this.thrust.y -= (this.thrustConst * Math.sin(this.a)) / this.fps;
@@ -188,13 +215,22 @@ class Ship {
           continue;
         }
       }
+    } else {
+      //Update peices of the ship
+      for (let i = 0; i < this.pieces.length; i++) {
+        let piece = this.pieces[i];
+        piece.x += piece.xvelocity;
+        piece.y += piece.yvelocity;
+        piece.a += piece.rot;
+      }
     }
   }
 
+  // Drawing aspects related to the ship
   draw(SHOW_CENTER_DOT, SHOW_BOUNDING) {
     if (!this.exploding) {
       // Beginning Draw triangle ship
-      this.context.strokeStyle = 'white';
+      this.context.strokeStyle = this.color;
       this.context.lineWidth = this.size / 30; // SHIP_SIZE / 20
       this.context.beginPath();
 
@@ -280,7 +316,7 @@ class Ship {
             this.context.arc(
               fragment.x,
               fragment.y,
-              this.size / 30,
+              this.size / 60,
               0,
               Math.PI * 2,
               false
@@ -292,22 +328,52 @@ class Ship {
     }
     // Else, the ship is exploding
     else {
-      //Draw the explosion
-      const colors = ['darkred', 'red', 'orange', 'yellow', 'white'];
-      const radii = [1.8, 1.4, 1.1, 0.8, 0.5];
-      for (let i = 0; i < colors.length; i++) {
-        this.context.fillStyle = colors[i];
-        this.context.beginPath();
-        this.context.arc(
-          this.x,
-          this.y,
-          this.r * radii[i],
-          0,
-          Math.PI * 2,
-          false
-        );
-        this.context.fill();
-      }
+      let color = this.color;
+      let lineWidth = this.size / 30; // SHIP_SIZE / 30
+      let pieces = this.pieces;
+
+      this.drawLine(
+        pieces[0].x + (4 / 3) * pieces[0].r * Math.cos(pieces[0].a),
+        pieces[0].y - (4 / 3) * pieces[0].r * Math.sin(pieces[0].a),
+        pieces[0].x -
+          pieces[0].r *
+            ((2 / 3) * Math.cos(pieces[0].a) + Math.sin(pieces[0].a)),
+        pieces[0].y +
+          pieces[0].r *
+            ((2 / 3) * Math.sin(pieces[0].a) - Math.cos(pieces[0].a)),
+        color,
+        lineWidth
+      );
+
+      this.drawLine(
+        pieces[1].x -
+          pieces[1].r *
+            ((2 / 3) * Math.cos(pieces[1].a) + Math.sin(pieces[1].a)),
+        pieces[1].y +
+          pieces[1].r *
+            ((2 / 3) * Math.sin(pieces[1].a) - Math.cos(pieces[1].a)),
+        pieces[1].x -
+          pieces[1].r *
+            ((2 / 3) * Math.cos(pieces[1].a) - Math.sin(pieces[1].a)),
+        pieces[1].y +
+          pieces[1].r *
+            ((2 / 3) * Math.sin(pieces[1].a) + Math.cos(pieces[1].a)),
+        color,
+        lineWidth
+      );
+
+      this.drawLine(
+        pieces[2].x -
+          pieces[2].r *
+            ((2 / 3) * Math.cos(pieces[2].a) - Math.sin(pieces[2].a)),
+        pieces[2].y +
+          pieces[2].r *
+            ((2 / 3) * Math.sin(pieces[2].a) + Math.cos(pieces[2].a)),
+        pieces[2].x + (4 / 3) * pieces[2].r * Math.cos(pieces[2].a),
+        pieces[2].y - (4 / 3) * pieces[2].r * Math.sin(pieces[2].a),
+        color,
+        lineWidth
+      );
     }
 
     //Developer Tools
@@ -325,6 +391,16 @@ class Ship {
       this.context.arc(this.x, this.y, this.r, 0, Math.PI * 2, false);
       this.context.stroke();
     }
+  }
+
+  drawLine(x1, y1, x2, y2, color, lineWidth) {
+    this.context.strokeStyle = color;
+    this.context.lineWidth = lineWidth;
+    this.context.beginPath();
+    this.context.moveTo(x1, y1);
+    this.context.lineTo(x2, y2);
+    this.context.closePath();
+    this.context.stroke();
   }
 }
 export default Ship;
