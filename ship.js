@@ -35,6 +35,7 @@ class Ship {
     this.friction = FRICTION; // Level of friction (0 = none, 1 = Heavy)
     this.thrustConst = SHIP_THRUST; // Acceleration of the ship in pixels per second
     this.thrusting = false;
+    this.dead = false;
     this.thrust = {
       x: 0,
       y: 0
@@ -226,8 +227,8 @@ class Ship {
         piece.a += piece.rot;
       }
       this.explodeTime--;
+      if (this.explodeTime === 1) this.dead = true;
     }
-    console.log(this.explodeTime);
   }
 
   // Drawing aspects related to the ship
