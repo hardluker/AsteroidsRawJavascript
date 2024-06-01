@@ -149,7 +149,7 @@ class Ship {
       });
     }
     // Adding an explode time to the ship
-    this.explodeTime = this.explodeDuration;
+    this.explodeTime = Math.ceil(this.explodeDuration * this.fps);
   }
 
   //Updating logic and positional data related to the ship.
@@ -198,6 +198,7 @@ class Ship {
             Math.pow(this.lasers[i].yvelocity, 2)
         );
 
+        // If the laser is exploding, stop moving.
         if (this.lasers[i].explodeTime > 0) {
           this.lasers[i].xvelocity = 0;
           this.lasers[i].yvelocity = 0;
@@ -210,6 +211,7 @@ class Ship {
           fragment.y += fragment.yvelocity;
           this.lasers[i].explodeTime--;
         }
+        // Once the timer has counted down, remove the laser and it's fragments
         if (this.lasers[i].explodeTime < 0) {
           this.lasers.splice(i, 1);
           continue;
@@ -223,7 +225,9 @@ class Ship {
         piece.y += piece.yvelocity;
         piece.a += piece.rot;
       }
+      this.explodeTime--;
     }
+    console.log(this.explodeTime);
   }
 
   // Drawing aspects related to the ship
@@ -305,8 +309,9 @@ class Ship {
             false
           );
           this.context.fill();
-        } else {
-          // If the laser can explode, explode and create the fragments
+        }
+        // Otherwise, flag the laser and explode it. Finally, draw the laser.
+        else {
           if (this.lasers[i].canExplode) this.explodeLaser(this.lasers[i]);
           // Draw the laser explosion fragments
           for (let j = 0; j < this.lasers[i].fragments.length; j++) {
@@ -316,7 +321,7 @@ class Ship {
             this.context.arc(
               fragment.x,
               fragment.y,
-              this.size / 60,
+              this.size / 40,
               0,
               Math.PI * 2,
               false
@@ -332,6 +337,7 @@ class Ship {
       let lineWidth = this.size / 30; // SHIP_SIZE / 30
       let pieces = this.pieces;
 
+      // Drawing first piece of the ship
       this.drawLine(
         pieces[0].x + (4 / 3) * pieces[0].r * Math.cos(pieces[0].a),
         pieces[0].y - (4 / 3) * pieces[0].r * Math.sin(pieces[0].a),
@@ -345,6 +351,7 @@ class Ship {
         lineWidth
       );
 
+      //Drawing second piece of the ship
       this.drawLine(
         pieces[1].x -
           pieces[1].r *
@@ -362,6 +369,7 @@ class Ship {
         lineWidth
       );
 
+      // Drawing third piece of the ship
       this.drawLine(
         pieces[2].x -
           pieces[2].r *
@@ -393,6 +401,7 @@ class Ship {
     }
   }
 
+  //Function for drawing a single line between two points.
   drawLine(x1, y1, x2, y2, color, lineWidth) {
     this.context.strokeStyle = color;
     this.context.lineWidth = lineWidth;

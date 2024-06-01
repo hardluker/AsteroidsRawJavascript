@@ -1,4 +1,5 @@
 import { distBetweenPoints } from './asteroid-game.js'; // Importing this utility function for calculating asteroid distance from ship.
+import { level } from './asteroid-game.js';
 
 class AsteroidBelt {
   constructor(
@@ -32,7 +33,7 @@ class AsteroidBelt {
 
   // This function creates the asteroids and ensures they are not spawned closer than (ship radius + asteroid radius * 2)
   createAsteroids(ship) {
-    for (let i = 0; i < this.numAsteroids; i++) {
+    for (let i = 0; i < this.numAsteroids + level; i++) {
       let x, y;
       do {
         x = Math.floor(Math.random() * this.canv.width);
@@ -50,14 +51,15 @@ class AsteroidBelt {
   // This function creates an asteroid object.
   // The direction, speed, and jaggedness are random bound by the global variables.
   newAsteroid(x, y, r) {
+    let levelMult = 1 + 0.1 * level; //For scaling the speed based on what the level is
     let asteroid = {
       x: x,
       y: y,
       xvelocity:
-        ((Math.random() * this.asteroidSpeed) / this.fps) *
+        ((Math.random() * this.asteroidSpeed * levelMult) / this.fps) *
         (Math.random() < 0.5 ? 1 : -1),
       yvelocity:
-        ((Math.random() * this.asteroidSpeed) / this.fps) *
+        ((Math.random() * this.asteroidSpeed * levelMult) / this.fps) *
         (Math.random() < 0.5 ? 1 : -1),
       r: r,
       a: Math.random() * Math.PI * 2,
