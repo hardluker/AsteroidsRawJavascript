@@ -16,5 +16,4 @@ public interface HighScoreMapper {
 
     List<HighScoreDto> toHighScoreDtos(List<HighScore> highScores);
 
-
 }
