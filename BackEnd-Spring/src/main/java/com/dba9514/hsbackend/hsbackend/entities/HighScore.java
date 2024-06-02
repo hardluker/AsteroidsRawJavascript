@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "high-scores")
-public class User {
+public class HighScore {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
