@@ -1,6 +1,6 @@
 package com.dba.crud.hsdb.controllers;
 
-import com.dba.crud.hsdb.dtos.highScoreDto;
+import com.dba.crud.hsdb.dtos.HighScoreDto;
 import com.dba.crud.hsdb.services.HighScoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ public class HighScoreController {
     private final HighScoreService highScoreService;
 
     @GetMapping("/api/high-scores")
-    public ResponseEntity<List<highScoreDto>> allRecords() {
+    public ResponseEntity<List<HighScoreDto>> allRecords() {
         return ResponseEntity.ok(highScoreService.allRecords());
     }
 }

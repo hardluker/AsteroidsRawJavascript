@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class highScoreDto {
+public class HighScoreDto {
 
     private Long id;
     private String initial;
