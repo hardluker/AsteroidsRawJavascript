@@ -1,13 +1,13 @@
-package com.dba.crud.hsdb;
+package com.dba9514.hsbackend.hsbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class HsdbApplication {
+public class HsbackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(HsdbApplication.class, args);
+		SpringApplication.run(HsbackendApplication.class, args);
 	}
 
 }

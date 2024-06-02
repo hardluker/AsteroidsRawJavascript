@@ -1,10 +1,10 @@
-package com.dba.crud.hsdb;
+package com.dba9514.hsbackend.hsbackend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class HsdbApplicationTests {
+class HsbackendApplicationTests {
 
 	@Test
 	void contextLoads() {
