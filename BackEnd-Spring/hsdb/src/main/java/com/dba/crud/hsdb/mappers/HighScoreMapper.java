@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface HighScoreMapper {
 
-    HighScore toHighscore(HighScoreDto dto);
+    HighScore toHighScore(HighScoreDto dto);
 
     HighScoreDto toHighScoreDto(HighScore highScore);
 
