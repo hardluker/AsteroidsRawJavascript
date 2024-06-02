@@ -29,4 +29,8 @@ public class HighScoreService {
 
         return highScoreMapper.toHighScoreDto(createdHighScore);
     }
+
+    public void deleteHighScore(Long id) {
+        highScoresRepository.deleteById(id);
+    }
 }

@@ -4,10 +4,7 @@ import com.dba.crud.hsdb.dtos.HighScoreDto;
 import com.dba.crud.hsdb.services.HighScoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
@@ -28,5 +25,10 @@ public class HighScoreController {
         HighScoreDto createdHighScore = highScoreService.createHighScore(highScoreDto);
         return ResponseEntity.created(URI.create("/api/high-scores" + createdHighScore.getId()))
                 .body(createdHighScore);
+    }
+    @DeleteMapping("/api/high-scores/{id}")
+    public ResponseEntity<Void> deleteHighScore(@PathVariable Long id) {
+        highScoreService.deleteHighScore(id);
+        return ResponseEntity.noContent().build();
     }
 }
