@@ -1,5 +1,9 @@
 import Ship from './ship.js';
 import AsteroidBelt from './asteroid-belt.js'; // Import the AsteroidBelt class
+import { Sound } from './Sound.js';
+
+//Audio for the ship
+const FX_MUSIC = new Sound('Sounds/4donald.m4a', 1, 0.5);
 
 // Game Settings
 const FPS = 60; // Frames per Second
@@ -21,7 +25,7 @@ const SHOW_CENTER_DOT = false; //Development tool for visualizing ship center an
 const SHOW_BOUNDING = false; // Development tool to visualize collision bounding.
 
 // Asteroid Related Settings
-const ASTEROIDS_NUM = 1; //Number of asteroids at the starting level.
+const ASTEROIDS_NUM = 3; //Number of asteroids at the starting level.
 const ASTEROIDS_SIZE = 100; // Starting size of asteroids in pixels.
 const ASTEROIDS_SIZE_MIN = 25; // The minimum size an asteroid can be.
 const ASTEROIDS_SPEED = 75; // Max starting speed in pixels per second.
@@ -41,9 +45,6 @@ let textAlpha = 1.0;
 let score = 0;
 let gameOver = false;
 
-// Audio Variables
-let fxLaser = new Audio('sounds/laser.m4a');
-
 //Defining the canvas and context for drawing the game.
 /** @type {HTMLCanvasElement} */
 let canv = document.getElementById('gameCanvas');
@@ -60,6 +61,7 @@ setInterval(gameLoop, 1000 / FPS);
 newGame();
 
 function gameLoop() {
+  FX_MUSIC.play();
   // Draw Outer Space Background
   context.fillStyle = 'black';
   context.fillRect(0, 0, canv.width, canv.height);

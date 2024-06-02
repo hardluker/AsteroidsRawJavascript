@@ -1,3 +1,11 @@
+import { Sound } from './Sound.js';
+
+//Audio for the ship
+const FX_LASER = new Sound('Sounds/laser.m4a', 3, 0.1);
+const FX_EXPLODE = new Sound('Sounds/explode.m4a', 1, 0.1);
+const FX_HIT = new Sound('Sounds/hit.m4a', 3, 0.1);
+const FX_THRUST = new Sound('Sounds/thrust.m4a', 1, 0.1);
+
 class Ship {
   constructor(
     canv,
@@ -93,7 +101,11 @@ class Ship {
   // Ship shooting logic
   shootLaser() {
     //Create the laser object
-    if (this.canShoot && this.lasers.length < this.lasersMax) {
+    if (
+      !this.exploding &&
+      this.canShoot &&
+      this.lasers.length < this.lasersMax
+    ) {
       this.lasers.push({
         // Creating the laser from the nose of the ship
         x: this.x + (4 / 3) * this.r * Math.cos(this.a),
@@ -105,6 +117,7 @@ class Ship {
         canExplode: true,
         fragments: [] // Array of the laser fragments for exploding
       });
+      FX_LASER.play();
     }
     // Prevent further shooting
     this.canShoot = false;
@@ -125,6 +138,7 @@ class Ship {
           (Math.random() < 0.5 ? 1 : -1)
       });
     }
+    FX_HIT.play();
     laser.canExplode = false;
   }
 
@@ -149,6 +163,8 @@ class Ship {
           (Math.random() < 0.5 ? 1 : -1)
       });
     }
+    FX_EXPLODE.play();
+    FX_THRUST.stop();
     // Adding an explode time to the ship
     this.explodeTime = Math.ceil(this.explodeDuration * this.fps);
   }
@@ -163,9 +179,11 @@ class Ship {
       if (this.thrusting) {
         this.thrust.x += (this.thrustConst * Math.cos(this.a)) / this.fps;
         this.thrust.y -= (this.thrustConst * Math.sin(this.a)) / this.fps;
+        FX_THRUST.play();
       } else {
         this.thrust.x -= (this.friction * this.thrust.x) / this.fps;
         this.thrust.y -= (this.friction * this.thrust.y) / this.fps;
+        FX_THRUST.stop();
       }
 
       // Update ship rotation
@@ -413,4 +431,5 @@ class Ship {
     this.context.stroke();
   }
 }
+
 export default Ship;
