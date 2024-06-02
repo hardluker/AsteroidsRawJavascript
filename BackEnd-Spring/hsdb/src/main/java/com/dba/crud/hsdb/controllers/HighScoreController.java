@@ -31,4 +31,10 @@ public class HighScoreController {
         highScoreService.deleteHighScore(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/api/high-scores/{id}")
+    public ResponseEntity<HighScoreDto> updateHighScore(@PathVariable Long id, @RequestBody HighScoreDto highScoreDto) {
+        HighScoreDto updatedHighScore = highScoreService.updateHighScore(id, highScoreDto);
+        return ResponseEntity.ok(updatedHighScore);
+    }
 }

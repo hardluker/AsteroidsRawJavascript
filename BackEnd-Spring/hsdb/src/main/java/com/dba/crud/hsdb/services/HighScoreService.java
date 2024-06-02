@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,5 +33,19 @@ public class HighScoreService {
 
     public void deleteHighScore(Long id) {
         highScoresRepository.deleteById(id);
+    }
+
+    public HighScoreDto updateHighScore(Long id, HighScoreDto highScoreDto) {
+        Optional<HighScore> existingHighScore = highScoresRepository.findById(id);
+        if (existingHighScore.isPresent()) {
+            HighScore highScore = existingHighScore.get();
+            highScore.setInitial(highScoreDto.getInitial());
+            highScore.setScore(highScoreDto.getScore());
+            HighScore updatedHighScore = highScoresRepository.save(highScore);
+            return highScoreMapper.toHighScoreDto(updatedHighScore);
+        } else {
+            // Handle the case where the high score with the given id does not exist
+            throw new RuntimeException("HighScore not found with id " + id);
+        }
     }
 }
