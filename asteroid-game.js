@@ -2,11 +2,9 @@ import Ship from './ship.js';
 import AsteroidBelt from './asteroid-belt.js'; // Import the AsteroidBelt class
 import { Sound } from './Sound.js';
 
-//Audio for the ship
-const FX_MUSIC = new Sound('Sounds/4donald.m4a', 1, 0.5);
-
 // Game Settings
 const FPS = 60; // Frames per Second
+export const AUDIO = false;
 
 // Ship Related Settings
 const SHIP_SIZE = 30; // Ship height in pixels.
@@ -45,6 +43,9 @@ let textAlpha = 1.0;
 let score = 0;
 let gameOver = false;
 
+//Audio for the ship
+const FX_MUSIC = new Sound('Sounds/4donald.m4a', 1, 0.25);
+
 //Defining the canvas and context for drawing the game.
 /** @type {HTMLCanvasElement} */
 let canv = document.getElementById('gameCanvas');
@@ -58,7 +59,7 @@ let asteroidBelt;
 setInterval(gameLoop, 1000 / FPS);
 
 // Initialize the game
-newGame();
+newGame(level);
 
 function gameLoop() {
   FX_MUSIC.play();
@@ -134,8 +135,8 @@ function detectCollisions() {
 }
 
 // Re-instantiating the ship and asteroids with default values.
-function newGame() {
-  level = 0;
+function newGame(startLevel = 0) {
+  level = startLevel;
   score = 0;
   levelText = 'Level ' + (level + 1);
   //Creating a ship
