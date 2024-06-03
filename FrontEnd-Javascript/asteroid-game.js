@@ -48,9 +48,8 @@ let gameOver = false;
 const api = new HttpHandler('http://150.136.243.78:8080');
 
 // Example calls
-(async () => {
-  console.log(await api.getAllHighScores());
-})();
+let data = await api.getAllHighScores();
+console.log(data[6].score);
 
 //Audio for the ship
 const FX_MUSIC = new Sound('Sounds/4donald.m4a', 1, 0.25);
