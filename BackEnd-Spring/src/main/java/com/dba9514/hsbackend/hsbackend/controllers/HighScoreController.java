@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/high-score")
+@RequestMapping("/api/high-scores")
 public class HighScoreController {
 
     @Autowired

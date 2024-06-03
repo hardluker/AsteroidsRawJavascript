@@ -3,7 +3,7 @@ package com.dba9514.hsbackend.hsbackend.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "high-scores2")
+@Table(name = "high-scores")
 public class HighScore {
 
     @Id
