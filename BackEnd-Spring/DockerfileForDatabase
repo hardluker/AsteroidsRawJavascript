@@ -1,0 +1,13 @@
+# Use the base image for postgres
+FROM postgres:12
+
+# Set environment variables
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=postgres
+ENV POSTGRES_DB=postgres
+
+# Expose the port
+EXPOSE 5432
+
+# Optionally, you can add volume instructions if needed
+VOLUME /var/lib/postgresql/data
