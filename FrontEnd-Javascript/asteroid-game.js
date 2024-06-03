@@ -1,5 +1,6 @@
 import Ship from './ship.js';
 import AsteroidBelt from './asteroid-belt.js'; // Import the AsteroidBelt class
+import HttpHandler from './HttpHandler.js';
 import { Sound } from './Sound.js';
 
 // Game Settings
@@ -42,6 +43,14 @@ let levelText;
 let textAlpha = 1.0;
 let score = 0;
 let gameOver = false;
+
+// Usage example
+const api = new HttpHandler('http://150.136.243.78:8080');
+
+// Example calls
+(async () => {
+  console.log(await api.getAllHighScores());
+})();
 
 //Audio for the ship
 const FX_MUSIC = new Sound('Sounds/4donald.m4a', 1, 0.25);
