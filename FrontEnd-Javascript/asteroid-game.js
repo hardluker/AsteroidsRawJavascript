@@ -47,6 +47,7 @@ let gameOver = false;
 // Http handler for querying the database
 const api = new HttpHandler('http://150.136.243.78:8080');
 
+// Getting the top 5 high scores from the back end.
 let highScores = getTopFiveScores(await api.getAllHighScores());
 
 console.log(highScores);
