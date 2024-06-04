@@ -14,28 +14,28 @@ const SHIP_THRUST = 4; // Acceleration of ship in pixels per second every second
 const FRICTION = 0.7; // Friction coefficient of space (0 = no friction, 1 = ton of friction).
 const TURN_SPEED = 360; // Turn speed in degrees per second.
 const SHIP_EXPLODE_DURATION = 2; // Duration of ship explosion in seconds.
-const LASERS_MAX = 3; //Maximum number of lasers on the screen at once.
+const LASERS_MAX = 3; // Maximum number of lasers on the screen at once.
 const LASERS_SPEED = 400; // Speed of the lasers in pixels per second.
 const LASERS_DIST = 0.5; // Maximum distance the laser can travel as a percentage of the width of the screen.
 const LASER_EXPLODE_DURATION = 2; // For how long in seconds the laser explosion will last.
 
 // Development Tools
-const SHOW_CENTER_DOT = false; //Development tool for visualizing ship center and trajectory.
+const SHOW_CENTER_DOT = false; // Development tool for visualizing ship center and trajectory.
 const SHOW_BOUNDING = false; // Development tool to visualize collision bounding.
 
 // Asteroid Related Settings
-const ASTEROIDS_NUM = 3; //Number of asteroids at the starting level.
+const ASTEROIDS_NUM = 3; // Number of asteroids at the starting level.
 const ASTEROIDS_SIZE = 100; // Starting size of asteroids in pixels.
 const ASTEROIDS_SIZE_MIN = 25; // The minimum size an asteroid can be.
 const ASTEROIDS_SPEED = 75; // Max starting speed in pixels per second.
 const ASTEROIDS_VERT = 10; // Average number of vertices of the asteroids.
-const ASTEROIDS_JAGGEDNESS = 0.35; //Jaggeness of asteroids. ( 0 = none, 1 = ton of).
+const ASTEROIDS_JAGGEDNESS = 0.35; // Jaggedness of asteroids. (0 = none, 1 = ton of).
 const ASTEROID_LINE_WIDTH = 1.5; // Width of the lines drawn for the asteroids.
 const NUM_OF_SPLITS = 2; // The number of asteroids an asteroid splits into when destroyed
 
-//General Game Parameters Constants
+// General Game Parameters Constants
 const TEXT_FADE_TIME = 2.5; // In seconds
-const TEXT_SIZE = 20; //Height in pixels
+const TEXT_SIZE = 20; // Height in pixels
 
 // General Game Parameters variables
 export let level = 0;
@@ -44,7 +44,8 @@ let textAlpha = 1.0;
 let score = 0;
 let gameOver = false;
 let enteredInitials = ''; // Stores the entered initials
-let keyPressAllowed = false;
+let keyPressAllowed = true;
+let scoreSubmitted = false; // Flag to ensure score is submitted once
 
 // Http handler for querying the database
 const api = new HttpHandler('http://150.136.243.78:8080');
@@ -54,10 +55,10 @@ let highScores = getTopFiveScores(await api.getAllHighScores());
 
 console.log(highScores);
 
-//Audio for the ship
+// Audio for the ship
 const FX_MUSIC = new Sound('Sounds/4donald.m4a', 1, 0.25);
 
-//Defining the canvas and context for drawing the game.
+// Defining the canvas and context for drawing the game.
 /** @type {HTMLCanvasElement} */
 let canv = document.getElementById('gameCanvas');
 let context = canv.getContext('2d');
@@ -72,12 +73,7 @@ setInterval(gameLoop, 1000 / FPS);
 // Initialize the game
 newGame(level);
 
-function getTopFiveScores(data) {
-  data.sort((a, b) => b.score - a.score);
-
-  return data.slice(0, 5);
-}
-
+// This is the Game Loop where all logic is continually updated per the FPS
 function gameLoop() {
   FX_MUSIC.play();
   // Draw Outer Space Background
@@ -88,7 +84,7 @@ function gameLoop() {
     // Updating ship positional and logical data.
     ship.update();
 
-    //Drawing the ship
+    // Drawing the ship
     ship.draw(SHOW_CENTER_DOT, SHOW_BOUNDING);
 
     checkForLevelUp();
@@ -106,7 +102,7 @@ function gameLoop() {
     detectCollisions();
   }
 
-  //Drawing the asteroid belt
+  // Drawing the asteroid belt
   asteroidBelt.draw(SHOW_BOUNDING);
   drawLevel();
   drawScore();
@@ -122,24 +118,22 @@ function detectCollisions() {
     ar = asteroidBelt.asteroids[i].r;
     // Looping over lasers checking for asteroid collisions
     for (let j = ship.lasers.length - 1; j >= 0; j--) {
-      //Grabbing the laser properties
+      // Grabbing the laser properties
       lx = ship.lasers[j].x;
       ly = ship.lasers[j].y;
 
       // If the laser collides, remove the laser
       if (distBetweenPoints(ax, ay, lx, ly) < ar) {
-        // remove the laser
-        //ship.lasers.splice(j, 1);
+        // Remove the laser
         ship.lasers[j].explodeTime = Math.ceil(LASER_EXPLODE_DURATION * FPS);
 
-        // remove the asteroid
+        // Remove the asteroid
         if (ship.lasers[j].canExplode) {
           if (asteroidBelt.asteroids[i].r * 2 < 30) score += 5;
           else if (asteroidBelt.asteroids[i].r * 2 < 55) score += 2;
           else score += 1;
           asteroidBelt.destroyAsteroid(i);
         }
-        //asteroidBelt.asteroids.splice(i, 1);
         break;
       }
     }
@@ -156,7 +150,7 @@ function newGame(startLevel = 0) {
   level = startLevel;
   score = 0;
   levelText = 'Level ' + (level + 1);
-  //Creating a ship
+  // Creating a ship
   ship = new Ship(
     canv,
     context,
@@ -203,13 +197,13 @@ function levelUp() {
   textAlpha = 1.0;
 }
 
-function endGame() {
+async function endGame() {
   drawHighScores();
   let txt = 'Game Over! Press Space';
   drawText(canv.width / 4, canv.height * 0.9, txt);
 
   if (score > Number(highScores[4].score)) {
-    let txt = 'You got a new high score!';
+    let txt = 'You made it in the top 5!';
     drawText(canv.width / 4, canv.height * 0.7, txt);
 
     drawText(
@@ -218,35 +212,14 @@ function endGame() {
       `Enter Initials: ${enteredInitials}`,
       1.0
     );
-    // Event listener for key presses
+
+    // Remove existing event listeners to prevent duplicates
+    document.removeEventListener('keydown', handleKeyDown);
+    document.removeEventListener('keyup', handleKeyUp);
+
+    // Add event listeners for entering initials and submitting the score
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
-
-    function handleKeyDown(event) {
-      const key = event.key.toUpperCase();
-      if (keyPressAllowed) {
-        if (
-          key.length === 1 &&
-          key.match(/[A-Z]/) &&
-          enteredInitials.length < 3
-        ) {
-          // Only allow uppercase letters
-          enteredInitials += key;
-        } else if (event.key === 'Enter' && enteredInitials.length === 3) {
-          document.removeEventListener('keydown', handleKeyDown); // Remove listener on Enter
-          submitHighScore(enteredInitials); // Submit the score with captured initials
-        } else if (event.key === 'Backspace' && enteredInitials.length > 0) {
-          // Remove the last entered character on Backspace press
-          enteredInitials = enteredInitials.slice(0, -1);
-        }
-
-        keyPressAllowed = false;
-      }
-    }
-
-    function handleKeyUp(event) {
-      keyPressAllowed = true; // Reset flag on key release
-    }
   }
 }
 
@@ -262,6 +235,7 @@ function drawLevel() {
 function restartGame(ev) {
   if (ev.code === 'Space') {
     document.removeEventListener('keydown', restartGame);
+    scoreSubmitted = false; // Reset the flag when the game restarts
     newGame();
   }
 }
@@ -284,7 +258,43 @@ function drawText(x, y, txt, alpha = 1.0, fade = false) {
   }
 }
 
+function getTopFiveScores(data) {
+  data.sort((a, b) => b.score - a.score);
+  return data.slice(0, 5);
+}
+
 // Utility function for checking the distance between 2 objects
 export function distBetweenPoints(x1, y1, x2, y2) {
   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
+
+// Function to handle the key down event
+async function handleKeyDown(event) {
+  if (!scoreSubmitted) {
+    // Check if the score has already been submitted
+    const key = event.key.toUpperCase();
+    if (keyPressAllowed) {
+      if (
+        key.length === 1 &&
+        key.match(/[A-Z]/) &&
+        enteredInitials.length < 3
+      ) {
+        enteredInitials += key;
+      } else if (event.key === 'Backspace' && enteredInitials.length > 0) {
+        enteredInitials = enteredInitials.slice(0, -1);
+      } else if (event.key === 'Enter' && enteredInitials.length === 3) {
+        document.removeEventListener('keydown', handleKeyDown);
+        document.removeEventListener('keyup', handleKeyUp);
+        await api.addHighScore(enteredInitials, score);
+        scoreSubmitted = true; // Set the flag to true after submission
+        score = 0;
+        highScores = getTopFiveScores(await api.getAllHighScores());
+      }
+      keyPressAllowed = false;
+    }
+  }
+}
+
+function handleKeyUp(event) {
+  keyPressAllowed = true;
 }
