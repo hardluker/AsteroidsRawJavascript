@@ -43,6 +43,8 @@ let levelText;
 let textAlpha = 1.0;
 let score = 0;
 let gameOver = false;
+let enteredInitials = ''; // Stores the entered initials
+let keyPressAllowed = false;
 
 // Http handler for querying the database
 const api = new HttpHandler('http://150.136.243.78:8080');
@@ -208,31 +210,42 @@ function endGame() {
 
   if (score > Number(highScores[4].score)) {
     let txt = 'You got a new high score!';
-    drawText(canv.width / 4, canv.height * 0.8, txt);
-
-    let enteredInitials = ''; // Stores the entered initials
+    drawText(canv.width / 4, canv.height * 0.7, txt);
 
     drawText(
-      canv.width / 2,
-      canv.height * 0.7,
+      canv.width / 4,
+      canv.height * 0.8,
       `Enter Initials: ${enteredInitials}`,
       1.0
     );
-
     // Event listener for key presses
     document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
 
     function handleKeyDown(event) {
       const key = event.key.toUpperCase();
-      if (key.length === 1 && key.match(/[A-Z]/)) {
-        // Only allow uppercase letters
-        if (enteredInitials.length < 3) {
+      if (keyPressAllowed) {
+        if (
+          key.length === 1 &&
+          key.match(/[A-Z]/) &&
+          enteredInitials.length < 3
+        ) {
+          // Only allow uppercase letters
           enteredInitials += key;
+        } else if (event.key === 'Enter' && enteredInitials.length === 3) {
+          document.removeEventListener('keydown', handleKeyDown); // Remove listener on Enter
+          submitHighScore(enteredInitials); // Submit the score with captured initials
+        } else if (event.key === 'Backspace' && enteredInitials.length > 0) {
+          // Remove the last entered character on Backspace press
+          enteredInitials = enteredInitials.slice(0, -1);
         }
-      } else if (event.key === 'Enter' && enteredInitials.length === 3) {
-        document.removeEventListener('keydown', handleKeyDown); // Remove listener on Enter
-        submitHighScore(enteredInitials); // Submit the score with captured initials
+
+        keyPressAllowed = false;
       }
+    }
+
+    function handleKeyUp(event) {
+      keyPressAllowed = true; // Reset flag on key release
     }
   }
 }
