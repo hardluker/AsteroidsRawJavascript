@@ -8,11 +8,11 @@ Notice that the global variables are mapped in the application.properties file.
 
 ## Overview
 
-This is a REST API for acessing a database of high scores and initials.
+This is a REST API for accessing a database of high scores and initials.
 
 The intention of this is to utilize it with a retro-arcade-style game.
 
-This is setup to work with a postgre database.
+This is set up to work with a postgre database.
 
 ## HTTP Requests
 
