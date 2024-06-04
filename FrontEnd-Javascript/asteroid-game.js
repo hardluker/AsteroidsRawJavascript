@@ -44,12 +44,12 @@ let textAlpha = 1.0;
 let score = 0;
 let gameOver = false;
 
-// Usage example
+// Http handler for querying the database
 const api = new HttpHandler('http://150.136.243.78:8080');
 
-// Example calls
-let data = await api.getAllHighScores();
-console.log(data[6].score);
+let highScores = getTopFiveScores(await api.getAllHighScores());
+
+console.log(highScores);
 
 //Audio for the ship
 const FX_MUSIC = new Sound('Sounds/4donald.m4a', 1, 0.25);
@@ -68,6 +68,12 @@ setInterval(gameLoop, 1000 / FPS);
 
 // Initialize the game
 newGame(level);
+
+function getTopFiveScores(data) {
+  data.sort((a, b) => b.score - a.score);
+
+  return data.slice(0, 5);
+}
 
 function gameLoop() {
   FX_MUSIC.play();
@@ -194,18 +200,15 @@ function levelUp() {
   textAlpha = 1.0;
 }
 
-function drawText(x, y, txt, alpha = 1.0, fade = false) {
-  if (alpha >= 0) {
-    context.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
-    context.font = 'small-caps ' + TEXT_SIZE + 'px "Press Start 2P"';
-    context.fillText(txt, x, y);
-    if (fade) alpha -= 1.0 / TEXT_FADE_TIME / FPS;
-  }
-}
-
 function endGame() {
+  drawHighScores();
   let txt = 'Game Over! Press Space';
   drawText(canv.width / 4, canv.height * 0.9, txt);
+
+  if (score > Number(highScores[4].score)) {
+    let txt = 'You got a new high score!';
+    drawText(canv.width / 4, canv.height * 0.8, txt);
+  }
 }
 
 function drawScore() {
@@ -223,6 +226,25 @@ function restartGame(ev) {
     newGame();
   }
 }
+
+function drawHighScores() {
+  let txt = 'High Scores';
+  drawText(canv.width / 4, canv.height * 0.1, txt);
+  for (let i = 0; i < highScores.length; i++) {
+    let txt = highScores[i].initials + '     ' + highScores[i].score;
+    drawText(canv.width / 4, canv.height * (i * 0.1 + 0.2), txt);
+  }
+}
+
+function drawText(x, y, txt, alpha = 1.0, fade = false) {
+  if (alpha >= 0) {
+    context.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+    context.font = 'small-caps ' + TEXT_SIZE + 'px "Press Start 2P"';
+    context.fillText(txt, x, y);
+    if (fade) alpha -= 1.0 / TEXT_FADE_TIME / FPS;
+  }
+}
+
 // Utility function for checking the distance between 2 objects
 export function distBetweenPoints(x1, y1, x2, y2) {
   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));

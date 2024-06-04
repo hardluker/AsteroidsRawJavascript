@@ -106,6 +106,7 @@ class Ship {
       this.canShoot &&
       this.lasers.length < this.lasersMax
     ) {
+      FX_LASER.play();
       this.lasers.push({
         // Creating the laser from the nose of the ship
         x: this.x + (4 / 3) * this.r * Math.cos(this.a),
@@ -117,7 +118,6 @@ class Ship {
         canExplode: true,
         fragments: [] // Array of the laser fragments for exploding
       });
-      FX_LASER.play();
     }
     // Prevent further shooting
     this.canShoot = false;
