@@ -1,3 +1,5 @@
+let audioOn = false;
+
 // This is a custom class to handle audio files and multiple streams.
 export class Sound {
   constructor(src, maxStreams = 1, vol = 1) {
@@ -13,8 +15,10 @@ export class Sound {
     //Playing the audio if it does not exceed the maxStreams of the instance.
     // The modular arithmetic allows accessing the next item in the array if there is one.
     this.play = function () {
-      this.streamNum = (this.streamNum + 1) % maxStreams;
-      this.streams[this.streamNum].play();
+      if (audioOn) {
+        this.streamNum = (this.streamNum + 1) % maxStreams;
+        this.streams[this.streamNum].play();
+      }
     };
 
     // This simply stops the current instance of the audio
