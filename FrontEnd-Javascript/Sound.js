@@ -1,4 +1,4 @@
-let audioOn = false;
+let audioOn = true;
 
 // This is a custom class to handle audio files and multiple streams.
 export class Sound {
