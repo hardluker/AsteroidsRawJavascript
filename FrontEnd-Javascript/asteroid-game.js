@@ -199,7 +199,7 @@ function levelUp() {
 
 async function endGame() {
   drawHighScores();
-  let txt = 'Game Over! Press Space';
+  let txt = 'Press Space to play again';
   drawText(canv.width / 4, canv.height * 0.9, txt);
 
   if (score > Number(highScores[4].score)) {
