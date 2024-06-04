@@ -209,6 +209,31 @@ function endGame() {
   if (score > Number(highScores[4].score)) {
     let txt = 'You got a new high score!';
     drawText(canv.width / 4, canv.height * 0.8, txt);
+
+    let enteredInitials = ''; // Stores the entered initials
+
+    drawText(
+      canv.width / 2,
+      canv.height * 0.7,
+      `Enter Initials: ${enteredInitials}`,
+      1.0
+    );
+
+    // Event listener for key presses
+    document.addEventListener('keydown', handleKeyDown);
+
+    function handleKeyDown(event) {
+      const key = event.key.toUpperCase();
+      if (key.length === 1 && key.match(/[A-Z]/)) {
+        // Only allow uppercase letters
+        if (enteredInitials.length < 3) {
+          enteredInitials += key;
+        }
+      } else if (event.key === 'Enter' && enteredInitials.length === 3) {
+        document.removeEventListener('keydown', handleKeyDown); // Remove listener on Enter
+        submitHighScore(enteredInitials); // Submit the score with captured initials
+      }
+    }
   }
 }
 
