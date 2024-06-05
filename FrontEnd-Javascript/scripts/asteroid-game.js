@@ -40,9 +40,7 @@ const TEXT_SIZE = 20; // Height in pixels
 // General Game Parameters variables
 export let level = 0;
 let levelText;
-let textAlpha = 1.0;
 let score = 0;
-let gameOver = false;
 let enteredInitials = ''; // Stores the entered initials
 let keyPressAllowed = true;
 let scoreSubmitted = false; // Flag to ensure score is submitted once
@@ -84,12 +82,12 @@ newGame(level);
 
 // This is the Game Loop where all logic is continually updated per the FPS
 function gameLoop() {
-  FX_MUSIC.play();
   // Draw Outer Space Background
   context.fillStyle = 'black';
   context.fillRect(0, 0, canv.width, canv.height);
 
   if (startGame) {
+    FX_MUSIC.play();
     if (!ship.dead) {
       // Updating ship positional and logical data.
       ship.update();
@@ -118,43 +116,6 @@ function gameLoop() {
     drawScore();
   } else {
     drawText(canv.width / 3.5, canv.height / 2, 'Press Enter to play');
-  }
-}
-
-// Function for detecting collisions with asteroids
-function detectCollisions() {
-  let ax, ay, ar, lx, ly;
-  for (let i = asteroidBelt.asteroids.length - 1; i >= 0; i--) {
-    // Grabbing the asteroid properties
-    ax = asteroidBelt.asteroids[i].x;
-    ay = asteroidBelt.asteroids[i].y;
-    ar = asteroidBelt.asteroids[i].r;
-    // Looping over lasers checking for asteroid collisions
-    for (let j = ship.lasers.length - 1; j >= 0; j--) {
-      // Grabbing the laser properties
-      lx = ship.lasers[j].x;
-      ly = ship.lasers[j].y;
-
-      // If the laser collides, remove the laser
-      if (distBetweenPoints(ax, ay, lx, ly) < ar) {
-        // Remove the laser
-        ship.lasers[j].explodeTime = Math.ceil(LASER_EXPLODE_DURATION * FPS);
-
-        // Remove the asteroid
-        if (ship.lasers[j].canExplode) {
-          if (asteroidBelt.asteroids[i].r * 2 < 30) score += 5;
-          else if (asteroidBelt.asteroids[i].r * 2 < 55) score += 2;
-          else score += 1;
-          asteroidBelt.destroyAsteroid(i);
-        }
-        break;
-      }
-    }
-
-    // If the asteroids collide with a ship the ship explodes
-    if (distBetweenPoints(ship.x, ship.y, ax, ay) < ship.r + ar) {
-      ship.explode();
-    }
   }
 }
 
@@ -197,6 +158,43 @@ function newGame(startLevel = 0) {
   );
 }
 
+// Function for detecting collisions with asteroids
+function detectCollisions() {
+  let ax, ay, ar, lx, ly;
+  for (let i = asteroidBelt.asteroids.length - 1; i >= 0; i--) {
+    // Grabbing the asteroid properties
+    ax = asteroidBelt.asteroids[i].x;
+    ay = asteroidBelt.asteroids[i].y;
+    ar = asteroidBelt.asteroids[i].r;
+    // Looping over lasers checking for asteroid collisions
+    for (let j = ship.lasers.length - 1; j >= 0; j--) {
+      // Grabbing the laser properties
+      lx = ship.lasers[j].x;
+      ly = ship.lasers[j].y;
+
+      // If the laser collides, remove the laser
+      if (distBetweenPoints(ax, ay, lx, ly) < ar) {
+        // Remove the laser
+        ship.lasers[j].explodeTime = Math.ceil(LASER_EXPLODE_DURATION * FPS);
+
+        // Remove the asteroid
+        if (ship.lasers[j].canExplode) {
+          if (asteroidBelt.asteroids[i].r * 2 < 30) score += 5;
+          else if (asteroidBelt.asteroids[i].r * 2 < 55) score += 2;
+          else score += 1;
+          asteroidBelt.destroyAsteroid(i);
+        }
+        break;
+      }
+    }
+
+    // If the asteroids collide with a ship the ship explodes
+    if (distBetweenPoints(ship.x, ship.y, ax, ay) < ship.r + ar) {
+      ship.explode();
+    }
+  }
+}
+
 function checkForLevelUp() {
   if (asteroidBelt.asteroids.length === 0) {
     levelUp();
@@ -207,7 +205,6 @@ function levelUp() {
   level++;
   asteroidBelt.createAsteroids(ship);
   levelText = 'Level ' + (level + 1);
-  textAlpha = 1.0;
 }
 
 async function endGame() {
