@@ -1,0 +1,23 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+
+  background-image: url('../images/space.jpg');
+  background-size: cover; /* Ensures the image covers the whole page */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+}
+
+h1 {
+  margin-bottom: 20px; /* Adds some space between the h1 and the canvas */
+  font-family: 'Press Start 2P', cursive; /* Ensures the custom font is applied */
+  color: white; /* Optional: makes the text color white to stand out against the background */
+}
+canvas {
+  border: 1px solid; /* Optional: just to make the canvas visible */
+  border-radius: 20px; /* Adjust the value to your preference */
+}
