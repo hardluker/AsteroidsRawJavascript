@@ -56,7 +56,7 @@ let highScores = getTopFiveScores(await api.getAllHighScores());
 console.log(highScores);
 
 // Audio for the ship
-const FX_MUSIC = new Sound('Sounds/4donald.m4a', 1, 0.25);
+const FX_MUSIC = new Sound('scripts/Sounds/4donald.m4a', 1, 0.25);
 
 // Defining the canvas and context for drawing the game.
 /** @type {HTMLCanvasElement} */

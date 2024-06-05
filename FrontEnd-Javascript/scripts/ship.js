@@ -1,10 +1,10 @@
 import { Sound } from './Sound.js';
 
 //Audio for the ship
-const FX_LASER = new Sound('Sounds/laser.m4a', 3, 0.1);
-const FX_EXPLODE = new Sound('Sounds/explode.m4a', 1, 0.1);
-const FX_HIT = new Sound('Sounds/hit.m4a', 3, 0.1);
-const FX_THRUST = new Sound('Sounds/thrust.m4a', 1, 0.1);
+const FX_LASER = new Sound('scripts/Sounds/laser.m4a', 3, 0.1);
+const FX_EXPLODE = new Sound('scripts/Sounds/explode.m4a', 1, 0.1);
+const FX_HIT = new Sound('scripts/Sounds/hit.m4a', 3, 0.1);
+const FX_THRUST = new Sound('scripts/Sounds/thrust.m4a', 1, 0.1);
 
 class Ship {
   constructor(
