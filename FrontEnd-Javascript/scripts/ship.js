@@ -81,6 +81,7 @@ class Ship {
       case ' ': //When the spacebar is pressed shoot
         this.canShoot = true;
         this.shootLaser();
+
         break;
     }
   }

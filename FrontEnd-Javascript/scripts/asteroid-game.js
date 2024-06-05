@@ -46,6 +46,7 @@ let gameOver = false;
 let enteredInitials = ''; // Stores the entered initials
 let keyPressAllowed = true;
 let scoreSubmitted = false; // Flag to ensure score is submitted once
+export let startGame = false;
 
 // Http handler for querying the database
 const api = new HttpHandler('http://150.136.243.78:8080');
@@ -70,6 +71,14 @@ let asteroidBelt;
 // Set up the Game loop
 setInterval(gameLoop, 1000 / FPS);
 
+// Event listener for spacebar to start the game
+document.addEventListener('keydown', (event) => {
+  if (event.code === 'Enter') {
+    startGame = true;
+    document.removeEventListener('keydown', restartGame); // Prevent restarting if already running
+  }
+});
+
 // Initialize the game
 newGame(level);
 
@@ -80,32 +89,36 @@ function gameLoop() {
   context.fillStyle = 'black';
   context.fillRect(0, 0, canv.width, canv.height);
 
-  if (!ship.dead) {
-    // Updating ship positional and logical data.
-    ship.update();
+  if (startGame) {
+    if (!ship.dead) {
+      // Updating ship positional and logical data.
+      ship.update();
 
-    // Drawing the ship
-    ship.draw(SHOW_CENTER_DOT, SHOW_BOUNDING);
+      // Drawing the ship
+      ship.draw(SHOW_CENTER_DOT, SHOW_BOUNDING);
 
-    checkForLevelUp();
-  } else {
-    if (ship.dead) {
-      endGame();
-      document.addEventListener('keydown', restartGame);
+      checkForLevelUp();
+    } else {
+      if (ship.dead) {
+        endGame();
+        document.addEventListener('keydown', restartGame);
+      }
     }
-  }
-  // Update Asteroid belt positional and logical data.
-  asteroidBelt.update();
+    // Update Asteroid belt positional and logical data.
+    asteroidBelt.update();
 
-  // Perform collision detection if the ship has not been exploded
-  if (!ship.exploding) {
-    detectCollisions();
-  }
+    // Perform collision detection if the ship has not been exploded
+    if (!ship.exploding) {
+      detectCollisions();
+    }
 
-  // Drawing the asteroid belt
-  asteroidBelt.draw(SHOW_BOUNDING);
-  drawLevel();
-  drawScore();
+    // Drawing the asteroid belt
+    asteroidBelt.draw(SHOW_BOUNDING);
+    drawLevel();
+    drawScore();
+  } else {
+    drawText(canv.width / 3.5, canv.height / 2, 'Press Enter to play');
+  }
 }
 
 // Function for detecting collisions with asteroids
