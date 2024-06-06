@@ -1,6 +1,7 @@
 import { distBetweenPoints } from './asteroid-game.js'; // Importing this utility function for calculating asteroid distance from ship.
 import { level } from './asteroid-game.js';
 
+// This class is for managing all of the asteroids in the game in real time.
 class AsteroidBelt {
   constructor(
     canv,
@@ -87,7 +88,7 @@ class AsteroidBelt {
     let y = this.asteroids[index].y;
     let r = this.asteroids[index].r;
 
-    // Adding smaller asteriods if the asteroid is big enoug
+    // Adding smaller asteriods if the asteroid is big enough
     if (r > this.asteroidSizeMin / 2) {
       for (let i = 0; i < this.numOfSplits; i++)
         this.asteroids.push(this.newAsteroid(x, y, r / 2));
@@ -95,7 +96,8 @@ class AsteroidBelt {
     this.asteroids.splice(index, 1);
   }
 
-  // This is the function for continually updating asteroid logic
+  // This is the function for continually updating asteroid logic.
+  // No drawing should be contained in this function.
   update() {
     for (let i = 0; i < this.asteroids.length; i++) {
       // Continually applying velocity to the asteroids
@@ -117,6 +119,8 @@ class AsteroidBelt {
     }
   }
 
+  // This function is for all real-time drawing of the asteroids.
+  // No update logic should be contained in this function.
   draw(SHOW_BOUNDING) {
     // Shortcut variables
     let x, y, r, a, vert, offs;

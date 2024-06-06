@@ -46,7 +46,7 @@ let keyPressAllowed = true;
 let scoreSubmitted = false; // Flag to ensure score is submitted once
 export let startGame = false;
 
-// Http handler for querying the database
+// Http handler for querying the backend/database
 const api = new HttpHandler('http://150.136.243.78:8080');
 
 // Getting the top 5 high scores from the back end.
@@ -77,7 +77,7 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-// Initialize the game
+// Initialize the game and the starting level.
 newGame(level);
 
 // This is the Game Loop where all logic is continually updated per the FPS
@@ -158,7 +158,51 @@ function newGame(startLevel = 0) {
   );
 }
 
-// Function for detecting collisions with asteroids
+// If the asteroids are all gone, level up
+function checkForLevelUp() {
+  if (asteroidBelt.asteroids.length === 0) {
+    levelUp();
+  }
+}
+
+// When the level up happens, create asteroids, display level.
+// NOTE: all asteroids speed and quantity scales with level number.
+function levelUp() {
+  level++;
+  asteroidBelt.createAsteroids(ship);
+  levelText = 'Level ' + (level + 1);
+}
+
+// This function is async as it deals with HTTP requests.
+// Once the game is over, display the high scores on the canvas
+// If the player makes it in the top 5, they are able to submit their high score.
+async function endGame() {
+  drawHighScores();
+  let txt = 'Press Space to play again';
+  drawText(canv.width / 4, canv.height * 0.9, txt);
+
+  if (score > Number(highScores[4].score)) {
+    let txt = 'You made it in the top 5!';
+    drawText(canv.width / 4, canv.height * 0.7, txt);
+
+    drawText(
+      canv.width / 4,
+      canv.height * 0.8,
+      `Enter Initials: ${enteredInitials}`,
+      1.0
+    );
+
+    // Remove existing event listeners to prevent duplicates
+    document.removeEventListener('keydown', handleKeyDown);
+    document.removeEventListener('keyup', handleKeyUp);
+
+    // Add event listeners for entering initials and submitting the score
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+  }
+}
+
+// Function for detecting collisions with the laser and ship with asteroids.
 function detectCollisions() {
   let ax, ay, ar, lx, ly;
   for (let i = asteroidBelt.asteroids.length - 1; i >= 0; i--) {
@@ -195,53 +239,7 @@ function detectCollisions() {
   }
 }
 
-function checkForLevelUp() {
-  if (asteroidBelt.asteroids.length === 0) {
-    levelUp();
-  }
-}
-
-function levelUp() {
-  level++;
-  asteroidBelt.createAsteroids(ship);
-  levelText = 'Level ' + (level + 1);
-}
-
-async function endGame() {
-  drawHighScores();
-  let txt = 'Press Space to play again';
-  drawText(canv.width / 4, canv.height * 0.9, txt);
-
-  if (score > Number(highScores[4].score)) {
-    let txt = 'You made it in the top 5!';
-    drawText(canv.width / 4, canv.height * 0.7, txt);
-
-    drawText(
-      canv.width / 4,
-      canv.height * 0.8,
-      `Enter Initials: ${enteredInitials}`,
-      1.0
-    );
-
-    // Remove existing event listeners to prevent duplicates
-    document.removeEventListener('keydown', handleKeyDown);
-    document.removeEventListener('keyup', handleKeyUp);
-
-    // Add event listeners for entering initials and submitting the score
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-  }
-}
-
-function drawScore() {
-  let txt = 'Score: ' + String(score);
-  drawText(canv.width / 1.5, canv.height * 0.1, txt, 0.75);
-}
-
-function drawLevel() {
-  drawText(canv.width / 10, canv.height * 0.95, levelText, 0.75);
-}
-
+// After the game has ended, the player is able to restart with the space key.
 function restartGame(ev) {
   if (ev.code === 'Space') {
     document.removeEventListener('keydown', restartGame);
@@ -250,6 +248,18 @@ function restartGame(ev) {
   }
 }
 
+// This is for displaying the real-time updated score on the canvas
+function drawScore() {
+  let txt = 'Score: ' + String(score);
+  drawText(canv.width / 1.5, canv.height * 0.1, txt, 0.75);
+}
+
+//This is for displaying the real-time updated score on the canvas
+function drawLevel() {
+  drawText(canv.width / 10, canv.height * 0.95, levelText, 0.75);
+}
+
+// This is for displaying the high scores that are queried from the database.
 function drawHighScores() {
   let txt = 'High Scores';
   drawText(canv.width / 4, canv.height * 0.1, txt);
@@ -259,6 +269,7 @@ function drawHighScores() {
   }
 }
 
+// A general function for drawing a textbox in the canvas
 function drawText(x, y, txt, alpha = 1.0, fade = false) {
   if (alpha >= 0) {
     context.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
@@ -268,6 +279,7 @@ function drawText(x, y, txt, alpha = 1.0, fade = false) {
   }
 }
 
+// A general function for getting the top 5 high scores from the back end.
 function getTopFiveScores(data) {
   data.sort((a, b) => b.score - a.score);
   return data.slice(0, 5);
@@ -305,6 +317,7 @@ async function handleKeyDown(event) {
   }
 }
 
+// This prevents repeated inputs when holding down on keys.
 function handleKeyUp(event) {
   keyPressAllowed = true;
 }
