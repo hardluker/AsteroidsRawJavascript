@@ -10,7 +10,7 @@ export const AUDIO = false;
 // Ship Related Settings
 const SHIP_SIZE = 30; // Ship height in pixels.
 const SHIP_COLOR = 'white';
-const SHIP_THRUST = 3; // Acceleration of ship in pixels per second every second.
+const SHIP_THRUST = 3.2; // Acceleration of ship in pixels per second every second.
 const FRICTION = 0.7; // Friction coefficient of space (0 = no friction, 1 = ton of friction).
 const TURN_SPEED = 280; // Turn speed in degrees per second.
 const SHIP_EXPLODE_DURATION = 2; // Duration of ship explosion in seconds.
