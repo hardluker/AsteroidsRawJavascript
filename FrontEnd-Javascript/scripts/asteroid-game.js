@@ -177,7 +177,6 @@ function levelUp() {
 // Once the game is over, display the high scores on the canvas
 // If the player makes it in the top 5, they are able to submit their high score.
 async function endGame() {
-  highScores = getTopFiveScores(await api.getAllHighScores()); // updating the high scores
   drawHighScores();
   let txt = 'Press Space to play again';
   drawText(canv.width / 4, canv.height * 0.9, txt);
