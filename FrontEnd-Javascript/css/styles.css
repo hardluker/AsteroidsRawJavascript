@@ -27,3 +27,17 @@ canvas {
 ul {
   list-style-type: none;
 }
+a {
+  color: #3498db; /* Initial color */
+  text-decoration: none; /* Remove underline */
+  font-weight: bold; /* Make text bold */
+  transition: color 0.3s ease; /* Smooth color transition */
+}
+a:hover {
+  color: #2980b9; /* Color on hover */
+}
+
+a:focus {
+  color: #e74c3c; /* Color when focused */
+  outline: none; /* Remove default focus outline */
+}
