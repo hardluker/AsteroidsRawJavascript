@@ -47,7 +47,7 @@ let scoreSubmitted = false; // Flag to ensure score is submitted once
 export let startGame = false;
 
 // Http handler for querying the backend/database
-const api = new HttpHandler('http://150.136.243.78:8080');
+const api = new HttpHandler('https://hardcoreasteroids.com');
 
 // Getting the top 5 high scores from the back end.
 let highScores = getTopFiveScores(await api.getAllHighScores());
